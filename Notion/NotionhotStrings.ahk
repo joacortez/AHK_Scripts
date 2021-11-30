@@ -7,55 +7,54 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 #IfWinActive ahk_exe C:\Users\Joa Cortez\AppData\Local\Programs\Notion\Notion.exe
 insertMath := "$$$$"
 
- ; #Hotstring O
+; #Hotstring O
 :o:ßß::\blue{{}\boxed{{}+{enter 2}{}}{}}{up}
 return
 
 :*:gst::^{left}\text{{}\small ^{right}{}}{space}
 
-
- ; #Hotstring O C
-writeMat(type){
-  Send \begin{{}%type%{}}+{Enter}+{Enter}\end{{}%type%{}}{up}
-return
+; #Hotstring O C
+writeMat(type)
+{
+    Send \begin{{}%type%{}}+{Enter}+{Enter}\end{{}%type%{}}{up}
+    return
 }
 
 :oc:ali::
-writeMat("aligned")
+    writeMat("aligned")
 return
 :oc:mat::
-writeMat("matrix")
+    writeMat("matrix")
 return
 :oc:vmat::
-writeMat("vmatrix")
+    writeMat("vmatrix")
 return
 :oc:Vmat::
-writeMat("Vmatrix")
+    writeMat("Vmatrix")
 return
 :oc:bmat::
-writeMat("bmatrix")
+    writeMat("bmatrix")
 return
 :oc:Bmat::
-writeMat("Bmatrix")
+    writeMat("Bmatrix")
 return
 :oc:pmat::
-writeMat("pmatrix")
+    writeMat("pmatrix")
 return
 :oc:cmat::
-writeMat("dcases")
+    writeMat("dcases")
 return
 :oc:rmat::
-writeMat("drcases")
+    writeMat("drcases")
 return
 :oc:smat::
-writeMat("smallmatrix")
+    writeMat("smallmatrix")
 return
 :oc:cdmat::
-writeMat("CD")
+    writeMat("CD")
 return
 :oc:armat::\def\arraystretch{{}2.0{}}\begin{{}darray{}}{{}c|c{}}+{Enter}+{Enter}\end{{}darray{}}{up}
 return
-
 
 #Hotstring C
 :c:ONB::Orthornormalbasis
@@ -76,9 +75,9 @@ return
 
 :c:dhh::das heißt
 
-:c:ffalls::,&\text{{}falls {}}
+:c:ffalls::, &\text{{}falls {}}
 
-:c:ffür::,&\text{{}für {}}
+:c:ffür::, &\text{{}für {}}
 
 :c:zzb::zum Beispiel
 
@@ -92,12 +91,11 @@ return
 
 :c:WBB::Wertebereich
 
-
-
+:c:uaa::unter Andere
 
 ::#bk::$$\Bbb K$$
 
-:*:#bkn::$$\Bbb K{^}{{}n,n{}}$${space}
+:*:#bkn::$$\Bbb K{^}{{}n, n{}}$${space}
 
 ::#bas::$$\mathcal B$$
 
@@ -127,11 +125,11 @@ return
 
 :*:#rm::$$\R {^}m$$
 
-:*:#nnr::$$\R {^}{{}n,n{}}$$
+:*:#nnr::$$\R {^}{{}n, n{}}$$
 
-:*:#nmr::$$\R {^}{{}n,m{}}$$
+:*:#nmr::$$\R {^}{{}n, m{}}$$
 
-:*:#mnr::$$\R {^}{{}m,n{}}$$
+:*:#mnr::$$\R {^}{{}m, n{}}$$
 
 ::#impe::$$\underline Z$$
 
@@ -140,11 +138,11 @@ return
 ::#delta::$$\Delta$$
 
 ::#seif::
-Send Sei ^+{e} f\colon D \to\R{enter}{space}
+    Send Sei ^+{e} f\colon D \to\R{enter}{space}
 return
 
 :*:#seifn::
-Send Sei ^+{e} f\colon D \to\R{^}n{enter}{space}
+    Send Sei ^+{e} f\colon D \to\R{^}n{enter}{space}
 return
 
 ::#x0::$$\vec x_0$$
@@ -155,19 +153,17 @@ return
 
 :?:\dp::\displaystyle
 
-
 #Hotstring ? C
 
 ::bbk::\Bbb K
 
-:*:bbkn::\Bbb K{^}{{}n,n{}}
+:*:bbkn::\Bbb K{^}{{}n, n{}}
 
 ::bbcal::\mathcal B
 
-::,,::\ldots
+::, , ::\ldots
 
-::,.,::{,} \ldots {,}
-
+::, ., ::{, } \ldots {, }
 
 ::summ0::\sum{^}n_{{}k=0{}}
 
@@ -201,16 +197,32 @@ return
 
 ::litt::\lim_ {{}t \to
 
+::liTT::\lim_ {{}T \to
+
 ::lit0::\lim_{{}t\to 0{}}
 
 ::litinf::\lim_{{}t \to \infin{}}
 
 ::lininf::\lim_{{}x \to \infin{}}
 
+::int0inf::\int_0{^}\infin
+
+::intab::\int_a{^}B
+
+::int0b::\int_0{^}b
+
+::\intinfin::\int_{{}-\infin{}}{^}\infin
 
 
 ::^-1::{^}{{}-1{}}
-
+::^-2::{^}{{}-2{}}
+::^-3::{^}{{}-3{}}
+::^-4::{^}{{}-4{}}
+::^-5::{^}{{}-5{}}
+::^-6::{^}{{}-6{}}
+::^-7::{^}{{}-7{}}
+::^-8::{^}{{}-8{}}
+::^-9::{^}{{}-9{}}
 
 ::mmur::{{}\mu_r{}}
 
@@ -225,7 +237,6 @@ return
 ::rr0::{{}r_0{}}
 
 ::2ppi::{{}2\pi{}}
-
 
 ::vvec::\vec v
 
@@ -265,21 +276,21 @@ return
 
 ::ddz::{{}\text d z{}}
 
-
-
 ::ntor::\to\R{^}n
 
-::nton::\to\R{^}{{}n,n{}}
+::nton::\to\R{^}{{}n, n{}}
 
-::nton::\to\R{^}{{}n,n{}}
+::nton::\to\R{^}{{}n, n{}}
 
 ::mtor::\to\R{^}m
 
-::ntom::\to\R{^}{{}n,m{}}
+::ntom::\to\R{^}{{}n, m{}}
 
-::mton::\to\R{^}{{}m,n{}}
+::mton::\to\R{^}{{}m, n{}}
 
 ::rtor::\to\R
+
+::[\to::[ \ \to
 
 ::inrr::\in\R
 
@@ -287,13 +298,13 @@ return
 
 ::inrm::\in\R{^}m
 
-::innrn::\in\R{^}{{}n,n{}}
+::innrn::\in\R{^}{{}n, n{}}
 
-::inmrm::\in\R{^}{{}m,m{}}
+::inmrm::\in\R{^}{{}m, m{}}
 
-::innrm::\in\R{^}{{}n,m{}}
+::innrm::\in\R{^}{{}n, m{}}
 
-::inmrn::\in\R{^}{{}m,n{}}
+::inmrn::\in\R{^}{{}m, n{}}
 
 ::subrr::\sub\R
 
@@ -303,17 +314,13 @@ return
 
 ::subrn::\sub\R{^}n
 
-::subnrn::\sub\R{^}{{}n,n{}}
+::subnrn::\sub\R{^}{{}n, n{}}
 
 ::ttan::\tan(
-
-
 
 ::ssin::\sin(
 
 ::ccos::\cos(
-
-
 
 ::ssix::\sin(x)
 
@@ -327,21 +334,15 @@ return
 
 ::ttav::\tan(\varphi)
 
-
 #Hotstring * ?
 
-
 ::^--::
-Send {^}{{}-
-KeyWait Space, D
-Send {}}
+    Send {^}{{}-
+    KeyWait Space, D
+    Send {}}
 return
 
-
-
-
-
-::\lvert::\,\vert\,
+::\lvert::\, \vert\, 
 
 ::\limm::\lim_{{}
 
@@ -379,225 +380,220 @@ return
 
 ::ää::+^{left}^{b}{right}^b{space}
 
+::\laplace::\mathscr{{}L{}}
+
+::\fourier::\mathscr{{}F{}}
 
 ::ccode::
-Send {enter}
-Send {`` 3} ^v
-Send ^+{up}
-Send {down}
+    Send {enter}
+    Send {`` 3} ^v
+    Send ^+{up}
+    Send {down}
 return
 ::üü::
-Send ^a^b
-Send {right}
-Send {Enter}
+    Send ^a^b
+    Send {right}
+    Send {Enter}
 return
-
-
-
-
 
 #Hotstring * ? b0
 
-replace(){
-Send {backspace}{{}
-return
+replace()
+{
+    Send {backspace}{{}
+    return
 }
 
-wait1(){
-  Send {backspace}{{}
-  KeyWait F1, D, T30
-  Send {}}{space}
-return
+wait1()
+{
+    Send {backspace}{{}
+    KeyWait F1, D, T30
+    Send {}}{space}
+    return
 }
 
-
-wait2(){
-  Send {backspace}{{}
-  KeyWait F1, D, T30
-  Send {}}{{}
-return
+wait2()
+{
+    Send {backspace}{{}
+    KeyWait F1, D, T30
+    Send {}}{{}
+    return
 }
 
 ::\textt::
-replace()
+    replace()
 return
 
 ::\bluee::
-replace()
+    replace()
 return
 
 ::\greenn::
-replace()
+    replace()
 return
 
 ::\orangee::
-replace()
+    replace()
 return
 
 ::\purplee::
-replace()
+    replace()
 return
 
 ::\redd::
-replace()
+    replace()
 return
 
 ::\cancell::
-replace()
+    replace()
 return
 
 ::\xcancell::
-replace()
+    replace()
 return
 
 ::\overlinee::
-replace()
+    replace()
 return
 
 ::\underlinee::
-replace()
+    replace()
 return
 
 ::\sqrtt::
-replace()
+    replace()
 return
 
 ::\brakett::
-replace()
+    replace()
 return
 
 ::\overbracee::
-replace()
+    replace()
 return
 
 ::\underbracee::
-replace()
+    replace()
 return
 
 ::\doo::
-replace()
+    replace()
 return
-
 
 ::\brakett::
-replace()
+    replace()
 return
 
-
 ::__::
-wait1()
+    wait1()
 return
 
 ::^^::
-wait1()
+    wait1()
 return
 
 ::\fracc::
-wait2()
+    wait2()
 return
 
 ::\dfracc::
-wait2()
+    wait2()
 return
 
 ::\dii::
-wait2()
+    wait2()
 return
 
 ::\binomm::
-wait2()
+    wait2()
 return
 
 ::\dbinomm::
-wait2()
+    wait2()
 return
 
-
-
-
- ; #Hotkey
+; #Hotkey
 
 F2::
-Send {&}{=}{Space}
+    Send {&}{=}{Space}
 return
 
 F3::
-Send \\ \hline+{enter}
-return
- 
-!1::
-SendInput ^{end}
-SendInput {enter 2}
-SendInput /blockm
-SendInput ^+{up}
-SendInput {enter}
+    Send \\ \hline+{enter}
 return
 
+!1::
+    SendInput ^{end}
+    SendInput {enter 2}
+    SendInput /blockm
+    SendInput ^+{up}
+    SendInput {enter}
+return
 
 !2::
-Send ^+{2}Definition (
+    Send ^+{2}Definition (
 return
 !3::
-Send ^+{3}Bemerkungen{enter}^+{6}
+    Send ^+{3}Bemerkungen{enter}^+{6}
 return
 
 ^!g::
-Send >
+    Send >
 return
 
 ^!l::
-Send <
+    Send <
 return
 
 !^v::
-Send |
+    Send |
 return
 
 !^1::
-Send {{}
-return 
+    Send {{}
+return
 
 ^y::
-Send {esc}
-Sleep 1
-Send {delete}
-Sleep 1
-Send {down 2}{enter}
+    Send {esc}
+    Sleep 1
+    Send {delete}
+    Sleep 1
+    Send {down 2}{enter}
 return
 
 +Enter::
-Send ^{end}
-Send {enter}
+    Send ^{end}
+    Send {enter}
 return
 
 ^Enter::
-Send ^{home}
-Send {left}
-Sleep 1
-Send {enter}
+    Send ^{home}
+    Send {left}
+    Sleep 1
+    Send {enter}
 return
 
 +^Enter::
-Send +{Enter}
+    Send +{Enter}
 return
 
 ^!Enter::
-Send {End}\\
-Send +{enter}
+    Send {End}\\
+    Send +{enter}
 return
 
 !+Enter::
-Send ^{enter}
+    Send ^{enter}
 return
 
 ^!F1::
-Send (\vec x)
+    Send (\vec x)
 return
 
 ^!F2::
-Send (x,y)
+    Send (x, y)
 return
 
 ^!F3::
-Send (x,y,z)
+    Send (x, y, z)
 return
