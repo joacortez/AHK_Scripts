@@ -1,14 +1,18 @@
-﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+﻿#SingleInstance, force
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 
 #Hotstring EndChars -()[]{}:;'"/\?!`n `t$_^=+
-#IfWinActive ahk_exe C:\Users\Joa Cortez\AppData\Local\Programs\Notion\Notion.exe
+#IfWinActive ahk_exe Notion.exe
+; #IfWinActive ahk_exe C:\Users\joaco\AppData\Local\Programs\Notion\Notion.exe
 insertMath := "$$$$"
+enables := "not asigned"
+
 
 ; #Hotstring O
-:o:ßß::\blue{{}\boxed{{}+{enter 2}{}}{}}{up}
+:o:ßß::\green{{}\boxed{{}+{enter 2}{}}{}}{up}
 return
 
 :*:gst::^{left}\text{{}\small ^{right}{}}{space}
@@ -53,7 +57,11 @@ return
 :oc:cdmat::
     writeMat("CD")
 return
-:oc:armat::\def\arraystretch{{}2.0{}}\begin{{}darray{}}{{}c|c{}}+{Enter}+{Enter}\end{{}darray{}}{up}
+
+:oc:armat::\def\arraystretch{{}1.5{}}\begin{{}darray{}}{{}|cc|{}}\hline+{Enter}+{Enter}\\ \hline\end{{}darray{}}{up}
+return
+
+:oc:truthmat::\newcommand{{}\do{}}[1]{{}\llbracket {#}1 \rrbracket{}}+{Enter}\def\arraystretch{{}1.5{}}\begin{{}darray{}}{{}c|c||c{}}+{Enter}\\+{Enter} \hline\end{{}darray{}}{up}{home}
 return
 
 #Hotstring C
@@ -85,6 +93,8 @@ return
 
 :c:idR::in der Regel
 
+:c:GDW::genau dann wenn
+
 :c:ggf::gegebenenfalls
 
 :c:DBB::Definitionbereich
@@ -93,13 +103,15 @@ return
 
 :c:uaa::unter Andere
 
+:c*:diffbar::differenzierbar
+    
 ::#bk::$$\Bbb K$$
 
 :*:#bkn::$$\Bbb K{^}{{}n, n{}}$${space}
 
 ::#bas::$$\mathcal B$$
 
-::lam::$$\lambda$$
+::#lam::$$\lambda$$
 
 :*:#vec::$$\vec v$$
 
@@ -112,6 +124,8 @@ return
 :*:#veb::$$\vec b$$
 
 :*:#veg::$$\vec g$$
+
+:*:#vep::$$\vec p$$
 
 :*:#ve0::$${{}\vec 0{}}$$
 
@@ -135,7 +149,17 @@ return
 
 ::#admit::$$\underline Y$$
 
-::#delta::$$\Delta$$
+:c:#delta::$$\delta$$
+
+:c:#Delta::$$\Delta$$
+
+:c:#sigma::$$\sigma$$
+
+:c:#Sigma::$$\Sigma$$
+
+::#phi::$$\varphi$$
+
+::#tau::$$\tau$$
 
 ::#seif::
     Send Sei ^+{e} f\colon D \to\R{enter}{space}
@@ -149,6 +173,22 @@ return
 
 :*:#x00::$$x_0$${space}
 
+::#q0::$$q_0$$
+
+::#alpha::$$\alpha$$
+
+::#beta::$$\beta$$
+
+::#gamma::$$\gamma$$
+
+::#omega::$$\omega$$
+
+::#pi::$$\pi$$
+
+::#N::$$\N$$
+
+::#R::$$\R$$
+
 ::ppf::=>
 
 :?:\dp::\displaystyle
@@ -161,58 +201,87 @@ return
 
 ::bbcal::\mathcal B
 
-::, , ::\ldots
+::,,::\ldots
 
-::, ., ::{, } \ldots {, }
+::,.,::{, } \ldots {, }
 
-::summ0::\sum{^}n_{{}k=0{}}
+::\summk::\sum_{{}k=
 
-::summ0i::\sum{^}n_{{}i=0{}}
+::\summ0::\sum{^}n_{{}k=0{}}
 
-::summ0j::\sum{^}n_{{}j=0{}}
+::\summ0i::\sum{^}n_{{}i=0{}}
 
-::summ1::\sum{^}n_{{}k=1{}}
+::\summ0j::\sum{^}n_{{}j=0{}}
 
-::summ1i::\sum{^}n_{{}i=1{}}
+::\summ1::\sum{^}n_{{}k=1{}}
 
-::summ1j::\sum{^}n_{{}j=1{}}
+::\summ1i::\sum{^}n_{{}i=1{}}
 
-::summinf0::\sum{^}\infin _ {{}k=0{}}
+::\summ1j::\sum{^}n_{{}j=1{}}
 
-::summinf1::\sum{^}\infin _ {{}k=1{}}
+::\summkn::\sum{^}n_{{}k=1{}}
 
-::likinf::\lim_{{}k\to\infin{}}
+::\summinf0::\sum{^}\infin _ {{}k=0{}}
 
-::livx::\lim_{{}\vec x \to
+::\summinf1::\sum{^}\infin _ {{}k=1{}}
 
-::lix::\lim_{{}x \to
+::\summinfin::\sum{^}\infin _ {{}k=-\infin{}}
 
-::lik::\lim_{{}k \to
+::\likinf::\lim_{{}k\to\infin{}}
 
-::likinf::\lim_{{}x \to \infin {}}
+::\livx::\lim_{{}\vec x \to
 
-::linn::\lim_{{}n \to
+::\lix::\lim_{{}x \to
 
-::lin0::\lim_{{}n \to 0{}}
+::\lik::\lim_{{}k \to
 
-::litt::\lim_ {{}t \to
+::\likinf::\lim_{{}x \to \infin {}}
 
-::liTT::\lim_ {{}T \to
+::\linn::\lim_{{}n \to
 
-::lit0::\lim_{{}t\to 0{}}
+::\lin0::\lim_{{}n \to 0{}}
 
-::litinf::\lim_{{}t \to \infin{}}
+::\litt::\lim_ {{}t \to
 
-::lininf::\lim_{{}x \to \infin{}}
+::\liTT::\lim_ {{}T \to
 
-::int0inf::\int_0{^}\infin
+::\lit0::\lim_{{}t\to 0{}}
 
-::intab::\int_a{^}B
+::\litinf::\lim_{{}t \to \infin{}}
 
-::int0b::\int_0{^}b
+::\liTinf::\lim_{{}T \to \infin{}}
+
+::\lininf::\lim_{{}x \to \infin{}}
+
+::\int0inf::\int_0{^}\infin
+
+::\intab::\int_a{^}b
+
+::\int0b::\int_0{^}b
+
+::\int0t::\int_0{^}t
 
 ::\intinfin::\int_{{}-\infin{}}{^}\infin
 
+::\notin::\not \in{space}
+
+::\ablf::\frac{{}\partial f{}}{{}\partial{space}
+
+::\abl::
+    Send \frac{{}\partial{space}
+    KeyWait F1, D, T30
+    Send {}}{{}\partial{space}
+return
+
+:*?:\card::\text{{}card{}}
+
+::\pto:::\rightharpoonup
+
+::\Q::\mathbb Q
+
+::\NFA::(Q, \Sigma, \Delta, S,F)
+
+::\DFA::(Q, \Sigma, \delta, q_0, F)
 
 ::^-1::{^}{{}-1{}}
 ::^-2::{^}{{}-2{}}
@@ -223,10 +292,17 @@ return
 ::^-7::{^}{{}-7{}}
 ::^-8::{^}{{}-8{}}
 ::^-9::{^}{{}-9{}}
+::^-x::{^}{{}-x{}}
+::^-y::{^}{{}-y{}}
+::^-t::{^}{{}-t{}}
 
 ::mmur::{{}\mu_r{}}
 
 ::mmu0::{{}\mu_0{}}
+
+::\mun::{{}\mu_n{}}
+
+::\mup::{{}\mu_p{}}
 
 ::epsr::{{}\varepsilon_r{}}
 
@@ -260,6 +336,8 @@ return
 
 ::vveb::\vec b
 
+::vve0::\vec 0
+
 ::vvex0::{{}\vec x_0{}}
 
 ::dda::{{}\text d \vec A{}}
@@ -291,6 +369,28 @@ return
 ::rtor::\to\R
 
 ::[\to::[ \ \to
+
+::\ordnung::\sqsubseteq
+
+::\inI::\in I
+
+::\inR::\in R
+
+::\inA::\in A
+
+::\inB::\in B
+
+::\inD::\in D
+
+::\inM::\in M
+
+::\inP::\in P
+
+::\inV::\in V
+
+::\inN::\in N
+
+::\inn::\in\N
 
 ::inrr::\in\R
 
@@ -334,6 +434,18 @@ return
 
 ::ttav::\tan(\varphi)
 
+::x0::{{}x_0{}}
+
+:c:Dx::{{}\Delta x{}}
+
+::y0::{{}y_0{}}
+
+:c:Dy::{{}\Delta y{}}
+
+::q0::{{}q_0{}}
+
+::lam::\lambda
+
 #Hotstring * ?
 
 ::^--::
@@ -354,9 +466,27 @@ return
 
 ::\span::{{}\underline U{}}
 
-::\ableitung::\frac{{}\partial f{}}{{}\partial{space}
-
 ::\oemga::\omega
+
+::\delta0::\delta_0
+
+::\omega0::\omega_0
+
+::t0::t_0
+
+::z0::z_0
+
+:c?:toin::tion
+
+::ppmos::p-MOSFET
+
+::nnmos::n-MOSFET
+
+::mostt::MOS-Transistor
+
+; :c?:funktoin::funktion
+
+; :c?:Funktoin::Funktion
 
 ::\omegat::\omega t
 
@@ -376,13 +506,40 @@ return
 
 ::k-k::^{left}$$^{right}$$-
 
-::öö::+^{left}^{e}{right}{space}
+:c:K'K::^{left}$$^{right}{'}$${space}
 
-::ää::+^{left}^{b}{right}^b{space}
+::((::\Big (
+::))::\Big )
 
-::\laplace::\mathscr{{}L{}}
+::öö::
+    Send +^{left}
+    Sleep, 1
+    Send ^{e}
+    Sleep, 1
+    Send {End}
+    Sleep, 1
+    Send {space}
+Return
 
-::\fourier::\mathscr{{}F{}}
+; ::ää::
+;     Send +^{left}
+;     Sleep, 1
+;     Send ^{b}
+;     Sleep, 1
+;     Send {right}
+;     Sleep, 1
+;     Send {space}
+; Return
+
+::ää::+^{left}^{b}{right}^{b}{space}
+
+::\L::\mathcal{{}L{}}[
+
+::\F::\mathcal{{}F{}}[
+
+::\P::\mathcal{{}P{}}
+
+::\A::\mathcal{{}A{}}
 
 ::ccode::
     Send {enter}
@@ -390,13 +547,42 @@ return
     Send ^+{up}
     Send {down}
 return
+
 ::üü::
-    Send ^a^b
-    Send {right}
+    Send {Esc}
+    Sleep, 10
+    Send ^b
+    Sleep, 10
+    Send {Enter}
+    Sleep, 1
     Send {Enter}
 return
 
+
+::++::
+    Send {Esc}
+    Sleep, 10
+    Send ^b
+    Sleep, 10
+    Sleep, 1
+    Send {Enter}
+    Sleep, 1
+    Send {Enter}
+    Send ^+{5}
+return 
+
+; ::üü::
+;     Send ^a^b
+;     ; Send ^{Right}
+;     Send {End}
+;     Send {Enter}
+; return
+
+
+; ::î::{^}i
+
 #Hotstring * ? b0
+
 
 replace()
 {
@@ -420,7 +606,40 @@ wait2()
     return
 }
 
+
+; wait2()
+; {
+;     Send {backspace}{{}
+;     enables := "short"
+;     return
+; }
+
+; d::
+; If (enables = "short" or enables = "long")
+;     {
+;         keywait,d
+; keywait,d,d t0.5 ; Increase the "t" value for a longer timeout.
+; if errorlevel
+; {
+;     ; pretend that nothing happened and forward the single "d"
+;     Send nota working
+;     return
+; }
+; ; A double "d" has been detected, act accordingly.
+; Send {}}{{}
+; enables = ""
+; }
+; Else
+; {
+; Send %enables%
+; }
+; return
+
 ::\textt::
+    replace()
+return
+
+::\boldd::
     replace()
 return
 
@@ -522,10 +741,14 @@ F3::
     Send \\ \hline+{enter}
 return
 
+F4::
+    Send {&}\coloneqq{space}
+return
+
 !1::
-    SendInput ^{end}
+    SendInput ^{end}{right}
     SendInput {enter 2}
-    SendInput /blockm
+    SendInput /blockeq
     SendInput ^+{up}
     SendInput {enter}
 return
@@ -534,7 +757,31 @@ return
     Send ^+{2}Definition (
 return
 !3::
-    Send ^+{3}Bemerkungen{enter}^+{6}
+    Send ^+{3}Bemerkungen{enter}^+{5}
+return
+
+!4::
+    Send /call{enter}
+    Sleep 1
+    Send MMerkzettel
+    Sleep 1
+    Send +^{left}^{b}{right}^{b}{enter}
+    Sleep 1
+    Send ^+{up}
+return
+
+F7::
+    Send {Home}{BackSpace}
+    Send {Esc}
+    Sleep, 10
+    Send ^b
+    Sleep, 10
+    Sleep, 1
+    Send {Enter}
+    Sleep, 1
+    Send {Enter}
+    Send ^+{5}
+    
 return
 
 ^!g::
@@ -562,13 +809,23 @@ return
 return
 
 +Enter::
-    Send ^{end}
+    Send ^a
+    Sleep, 1
+    Send {end}
+    Sleep, 1
     Send {enter}
 return
+; +Enter::
+;     Send ^{end}
+;     Sleep, 1
+;     Send {enter}
+; return
 
 ^Enter::
-    Send ^{home}
-    Send {left}
+    Send {esc}
+    Send {up}
+    Sleep 1
+    Send {enter}
     Sleep 1
     Send {enter}
 return
@@ -597,3 +854,37 @@ return
 ^!F3::
     Send (x, y, z)
 return
+
+^!t::
+    Send (t)
+return
+
+^!x::
+    Send (x)
+return
+
+^!y::
+    Send (y)
+return
+
+^!w::
+    Send (\omega)
+return
+
+^!s::
+    Send (s)
+return
+
+^!u::
+    Send $$u(t)$${space}
+return
+
+F6::
+    Send &=
+return
+
+^!space::
+    send {space}
+return
+
+
