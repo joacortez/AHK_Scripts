@@ -10,6 +10,579 @@ SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 insertMath := "$$$$"
 enables := "not asigned"
 
+winCheck := "ahk_exe Notion.exe"
+
+modifiers_match_list := "{Enter}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Right}{Home}{End}{PgUp}{PgDn}"
+; modifiers_match_list := "{Enter}{Ctrl}{Shift}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Left}{Right}{Home}{End}{PgUp}{PgDn}"
+singlechar_match_list := "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,x,y,z,ö,ä,ü,!,§,$,&,/,(,),=,?,+,#,-,_,.,:,,°,^,<,>,{,}"
+
+; match lists for normal mode
+normal_mode_match_list := "w,W,b,B,t,T,f,F"
+; modifiers_match_list := "{Enter}{Ctrl}{Shift}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Left}{Right}{Home}{End}{PgUp}{PgDn}"
+input_options :=  "B C E"
+
+global isInChangeMode := False
+global isInNormalMode := False
+global isInYankMode := False
+global isInDeleteMode := False
+
+
+check_normal_mode()
+{
+    return (WinActive("ahk_exe Notion.exe") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+}
+
+check_change_mode()
+{
+    return (WinActive("ahk_exe Notion.exe") and ((isInNormalMode == True) and (isInChangeMode == True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+}
+
+check_yank_mode()
+{
+    return (WinActive("ahk_exe Notion.exe") and ((isInNormalMode ==  True) and (isInChangeMode != True) and (isInYankMode == True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+}
+check_visual_mode()
+{
+    return (WinActive("ahk_exe Notion.exe") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode == True) and (isInDeleteMode != True)))
+}
+
+check_delete_mode()
+{
+    return (WinActive("ahk_exe Notion.exe") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode == True)))
+}
+
+check_insert_mode()
+{
+    return (WinActive("ahk_exe Notion.exe") and ((isInNormalMode != True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+}
+
+
+change_to_normal_mode()
+{
+    global
+    isInNormalMode := True
+    isInChangeMode := False
+    isInYankMode := False
+    isInVisualMode := False
+    isInDeleteMode := False
+}
+
+
+change_to_change_mode()
+{
+    global
+    isInNormalMode := True
+    isInChangeMode := True
+    isInYankMode := False
+    isInVisualMode := False
+    isInDeleteMode := False
+}
+
+change_to_yank_mode()
+{
+    global
+    isInNormalMode := True
+    isInChangeMode := False
+    isInYankMode := True
+    isInVisualMode := False
+    isInDeleteMode := False
+}
+
+change_to_visual_mode()
+{
+    global
+    isInNormalMode := True
+    isInChangeMode := False
+    isInYankMode := False
+    isInVisualMode := True
+    isInDeleteMode := False
+}
+
+change_to_delete_mode()
+{
+    global
+    isInNormalMode := True
+    isInChangeMode := False
+    isInYankMode := False
+    isInVisualMode := False
+    isInDeleteMode := True
+}
+
+change_to_insert_mode()
+{
+    global
+    isInNormalMode := False
+    isInChangeMode := False
+    isInYankMode := False
+    isInVisualMode := False
+    isInDeleteMode := False
+}
+
+
+
+; Functions
+; vim implementation
+
+highlight_until_EOL()
+{
+    Send +{End}
+    return
+}
+
+
+highlight_until_SOL()
+{
+    Send +{Home}
+    return
+}
+
+nav_to_prev_char()
+{
+    backUp := Clipboard
+
+    if (highlight_to_prev_char())
+    {
+        Send {Left}
+    }
+
+    Clipboard := backUp
+}
+
+
+nav_to_next_char()
+{
+    backUp := Clipboard
+
+    if (highlight_to_prev_char())
+    {
+        Send {Right}
+    }
+
+    Clipboard := backUp
+}
+
+
+
+change_to_prev_char()
+{
+    if (highlight_to_prev_char())
+    {
+        Send ^{x}
+    }
+}
+
+
+change_to_next_char()
+{
+    if (highlight_to_next_char())
+    {
+        Send ^{x}
+    }
+}
+
+
+
+highlight_to_prev_char()
+{
+    Input curr_char, B C L0 E,%modifiers_match_list%, %singlechar_match_list%
+    Clipboard := ""
+    ; copy until EOL
+    highlight_until_SOL()
+	Send ^c
+    Send {Left}
+    ClipWait 
+
+	sleep 10
+    len := StrLen(Clipboard)
+    index := InStr(Clipboard, curr_char, true)
+    if (index != 0)
+    {
+        Send {ShiftDown}
+        Send {Right %index%}
+        Send {ShiftUp}
+       Return True 
+    }
+    Else
+    {
+        Send {Right %len%}
+        return False
+    }
+
+    return False
+}
+
+
+highlight_to_next_char()
+{
+    Input curr_char, B C L0 E,%modifiers_match_list%, %singlechar_match_list%
+    Clipboard := ""
+    ; copy until EOL
+    highlight_until_EOL()
+	Send ^c
+    Send {Left}
+    ClipWait 
+
+	sleep 10
+    index := InStr(Clipboard, curr_char, true)
+    if (index != 0)
+    {
+        Send {ShiftDown}
+        Send {Right %index%}
+        Send {ShiftUp}
+
+        Return True
+    }
+
+    Return False
+}
+
+
+
+!Esc::
+    if (check_normal_mode())
+    {
+        MsgBox % "normal_mode"
+        Return
+    }
+    
+   else if (check_change_mode())
+    {
+        MsgBox % "change_mode"
+        Return
+    }
+
+    else if (check_yank_mode())
+    {
+        MsgBox % "yank_mode"
+        Return
+    }
+    
+    else if (check_insert_mode())
+    {
+        MsgBox % "insert_mode"
+        Return
+    }
+    else if (check_visual_mode())
+    {
+        MsgBox % "visual_mode"
+        Return
+    }
+    else if (check_delete_mode())
+    {
+        MsgBox % "delete_mode"
+        Return
+    }
+    
+    
+    MsgBox % "not found"
+    Return
+
+
+
+
+; Normal mode 
+#If
+#If check_normal_mode()
+
+j:: 
+    Send {Down}
+Return 
+
+k:: 
+    Send {Up}
+Return 
+
+l:: 
+    Send {Right}
+Return 
+
+h:: 
+    Send {Left}
+Return 
+
+w::
+    Send ^{Right}
+return 
+
+b::
+     Send ^{Left}
+Return
+
+t::
+    nav_to_next_char()
+return 
+
++T::
+    nav_to_prev_char()
+return
+
+p::
+    Send %Clipboard%
+Return
+
+i::
+    change_to_insert_mode()
+Return
+
++I::
+    Send {Home}
+    change_to_insert_mode()
+Return
+
+a::
+    Send {Right}
+    change_to_insert_mode()
+Return
+
++A::
+    Send {End}
+    change_to_insert_mode()
+Return
+
+c::
+    change_to_change_mode()
+Return
+
+y::
+    change_to_yank_mode()
+Return
+
+d::
+    change_to_delete_mode()
+Return
+
+; change mode
+#If
+#If check_change_mode()
+w::
+    Send ^+{Right}
+    Send ^{x}
+    change_to_insert_mode()
+Return
+
+
+b::
+    Send ^+{Left}
+    Send ^{x}
+    change_to_insert_mode()
+Return
+
+CapsLock::
+    change_to_normal_mode()
+Return
+
+
+; yank mode
+#If
+#If check_yank_mode()
+
+y::
+    Send {Esc}
+    Send ^{c}{Esc}
+    change_to_normal_mode()
+Return
+
+w::
+    Send +^{Right}
+    Send ^{c}{Esc}
+    change_to_normal_mode()
+Return
+
+b::
+    Send +^{Left}
+    Send ^{c}{Esc}
+    change_to_normal_mode()
+Return
+
+CapsLock::
+    change_to_normal_mode()
+Return
+
+; visual Mode
+#If
+#If check_visual_mode()
+w::
+    Send +^{Right}
+
+Return
+
+b::
+    Send +^{Left}
+Return
+
+y::
+    Send ^{c}
+    change_to_normal_mode()
+Return
+
+; !!!!!!
+d::
+    Send {Del}
+    change_to_insert_mode()
+Return
+
+c:: 
+    Send ^{x}
+    change_to_insert_mode()
+Return
+
+p::
+    Send %Clipboard%
+Return
+
+CapsLock::
+    change_to_normal_mode()
+Return
+    
+
+
+; delete mode 
+#If
+#If check_delete_mode()
+
+d::
+    Send {Esc}
+    Sleep 1
+    Send {Del}
+    Sleep 1
+    Send {Down 2}{Enter}
+return 
+
+w::
+    Send +^{Right}
+    Send {Del}    
+    change_to_normal_mode()
+
+Return
+
+b::
+    Send +^{Left}
+    Send {Del}
+    change_to_normal_mode()
+Return
+
+CapsLock::
+    change_to_normal_mode()
+Return
+
+
+; insert mode / no mode 
+#If
+#If check_insert_mode()
+
+
+
+
+!Left::
+    nav_to_prev_char()
+Return
+
+!Right::
+    nav_to_next_char()
+return
+
+; !Up::
+;     nav_to_prev_char(".")
+; return
+
+; !Down::
+;     nav_to_next_char(".")
+; return
+
+CapsLock::
+    change_to_normal_mode()
+Return
+
+
+
+
+
+; change blocks functions
+
+; make entire block bold
+make_block_bold()
+{
+    Send ^a^b{end}
+    return
+}
+
+; add a new block
+add_block_below()
+{
+    ; Send {esc}
+    ; Sleep 10
+    ; Send {enter}
+    ; Sleep 10
+    ; Send {enter}
+    Send ^a
+    Sleep, 1
+    Send {end}
+    Sleep, 1
+    Send {enter}
+    return
+}
+
+add_block_above()
+{
+    Send {esc}
+    Send {up}
+    Sleep 1
+    Send {enter}
+    Sleep 1
+    Send {enter}
+    return
+}
+
+; Replace functions
+replace()
+{
+    Send {backspace}{{}
+    return
+}
+
+wait1()
+{
+    Send {backspace}{{}
+    KeyWait F1, D, T30
+    Send {}}{space}
+    return
+}
+
+wait2()
+{
+    Send {backspace}{{}
+    KeyWait F1, D, T30
+    Send {}}{{}
+    return
+}
+
+; wait2()
+; {
+;     Send {backspace}{{}
+;     enables := "short"
+;     return
+; }
+
+; d::
+; If (enables = "short" or enables = "long")
+;     {
+;         keywait, d
+; keywait, d, d t0.5 ; Increase the "t" value for a longer timeout.
+; if errorlevel
+; {
+;     ; pretend that nothing happened and forward the single "d"
+;     Send nota working
+;     return
+; }
+; ; A double "d" has been detected, act accordingly.
+; Send {}}{{}
+; enables = ""
+; }
+; Else
+; {
+; Send %enables%
+; }
+; return
 
 ; #Hotstring O
 :o:ßß::\green{{}\boxed{{}+{enter 2}{}}{}}{up}
@@ -145,6 +718,8 @@ return
 
 :*:#mnr::$$\R {^}{{}m, n{}}$$
 
+:*:#inn::$$n \in \N$$
+
 ::#impe::$$\underline Z$$
 
 ::#admit::$$\underline Y$$
@@ -160,6 +735,10 @@ return
 ::#phi::$$\varphi$$
 
 ::#tau::$$\tau$$
+
+::#Gamma::$$\Gamma$$
+
+::#gamma::$$\gamma$$
 
 ::#seif::
     Send Sei ^+{e} f\colon D \to\R{enter}{space}
@@ -203,7 +782,7 @@ return
 
 ::,,::\ldots
 
-::,.,::{, } \ldots {, }
+::,.,::{,} \ldots {,}
 
 ::\summk::\sum_{{}k=
 
@@ -279,9 +858,20 @@ return
 
 ::\Q::\mathbb Q
 
-::\NFA::(Q, \Sigma, \Delta, S,F)
+::\NFA::(Q, \Sigma, \Delta, S, F)
 
 ::\DFA::(Q, \Sigma, \delta, q_0, F)
+
+::\PDA::(Q, \Sigma, \Gamma, \square, \Delta, q_0, F)
+
+::\G::(V, \Sigma, P, S)
+
+::\renew::\renewcommand
+
+::\newcomm::\newcommand{{}\do{}}{{}
+::\newcomm1::\newcommand{{}\do{}}[1]{{}
+::\newcomm2::\newcommand{{}\do{}}[2]{{}
+::\newcomm3::\newcommand{{}\do{}}[3]{{}
 
 ::^-1::{^}{{}-1{}}
 ::^-2::{^}{{}-2{}}
@@ -372,6 +962,14 @@ return
 
 ::\ordnung::\sqsubseteq
 
+::\L::\mathcal{{}L{}}[
+
+::\F::\mathcal{{}F{}}[
+
+::\P::\mathcal{{}P{}}
+
+::\A::\mathcal{{}A{}}
+
 ::\inI::\in I
 
 ::\inR::\in R
@@ -446,7 +1044,7 @@ return
 
 ::lam::\lambda
 
-#Hotstring * ?
+#Hotstring * ? C0
 
 ::^--::
     Send {^}{{}-
@@ -478,11 +1076,19 @@ return
 
 :c?:toin::tion
 
-::ppmos::p-MOSFET
+:?:schlat::schalt
 
-::nnmos::n-MOSFET
+::ppmos::p{-}MOSFET
 
-::mostt::MOS-Transistor
+::nnmos::n{-}MOSFET
+
+::mostt::MOS{-}Transistor
+
+::mmoss::MOSFET
+
+::npntt::npn{-}Transistor
+
+::pnptt::pnp{-}Transistor
 
 ; :c?:funktoin::funktion
 
@@ -533,13 +1139,7 @@ Return
 
 ::ää::+^{left}^{b}{right}^{b}{space}
 
-::\L::\mathcal{{}L{}}[
-
-::\F::\mathcal{{}F{}}[
-
-::\P::\mathcal{{}P{}}
-
-::\A::\mathcal{{}A{}}
+::ä,ä::+^{left}^{b}{right}^{b}, {space}
 
 ::ccode::
     Send {enter}
@@ -549,27 +1149,15 @@ Return
 return
 
 ::üü::
-    Send {Esc}
-    Sleep, 10
-    Send ^b
-    Sleep, 10
-    Send {Enter}
-    Sleep, 1
-    Send {Enter}
+    make_block_bold()
+    Send {enter}
 return
 
-
 ::++::
-    Send {Esc}
-    Sleep, 10
-    Send ^b
-    Sleep, 10
-    Sleep, 1
-    Send {Enter}
-    Sleep, 1
+    make_block_bold()
     Send {Enter}
     Send ^+{5}
-return 
+return
 
 ; ::üü::
 ;     Send ^a^b
@@ -578,62 +1166,9 @@ return
 ;     Send {Enter}
 ; return
 
-
 ; ::î::{^}i
 
 #Hotstring * ? b0
-
-
-replace()
-{
-    Send {backspace}{{}
-    return
-}
-
-wait1()
-{
-    Send {backspace}{{}
-    KeyWait F1, D, T30
-    Send {}}{space}
-    return
-}
-
-wait2()
-{
-    Send {backspace}{{}
-    KeyWait F1, D, T30
-    Send {}}{{}
-    return
-}
-
-
-; wait2()
-; {
-;     Send {backspace}{{}
-;     enables := "short"
-;     return
-; }
-
-; d::
-; If (enables = "short" or enables = "long")
-;     {
-;         keywait,d
-; keywait,d,d t0.5 ; Increase the "t" value for a longer timeout.
-; if errorlevel
-; {
-;     ; pretend that nothing happened and forward the single "d"
-;     Send nota working
-;     return
-; }
-; ; A double "d" has been detected, act accordingly.
-; Send {}}{{}
-; enables = ""
-; }
-; Else
-; {
-; Send %enables%
-; }
-; return
 
 ::\textt::
     replace()
@@ -769,19 +1304,26 @@ return
     Sleep 1
     Send ^+{up}
 return
+!5::
+    Send /call{enter}
+    Sleep 1
+    Send BBemerkung
+    Sleep 1
+    Send +^{left}^{b}{right}^{b}{enter}
+    Sleep 1
+    Send ^+{up}
+return
 
 F7::
     Send {Home}{BackSpace}
-    Send {Esc}
-    Sleep, 10
-    Send ^b
-    Sleep, 10
-    Sleep, 1
-    Send {Enter}
-    Sleep, 1
+   make_block_bold()
     Send {Enter}
     Send ^+{5}
     
+return
+
+^+ß::
+    Send /turncallout{enter}
 return
 
 ^!g::
@@ -809,11 +1351,7 @@ return
 return
 
 +Enter::
-    Send ^a
-    Sleep, 1
-    Send {end}
-    Sleep, 1
-    Send {enter}
+    add_block_below()
 return
 ; +Enter::
 ;     Send ^{end}
@@ -822,12 +1360,7 @@ return
 ; return
 
 ^Enter::
-    Send {esc}
-    Send {up}
-    Sleep 1
-    Send {enter}
-    Sleep 1
-    Send {enter}
+    add_block_above()
 return
 
 +^Enter::
@@ -888,3 +1421,76 @@ return
 return
 
 
+
+; disable unused keybindings
+#If
+#If WinActive("ahk_exe Notion.exe") and (isInNormalMode == True)
+*a::
+*b::
+*c::
+*d::
+*e::
+*f::
+*g::
+*h::
+*i::
+*j::
+*k::
+*l::
+*m::
+*n::
+*o::
+*p::
+*q::
+*r::
+*s::
+*t::
+*u::
+*v::
+*w::
+*x::
+*y::
+*z::
+0::
+1::
+2::
+3::
+4::
+5::
+6::
+7::
+8::
+9::
+`::
+~::
+!::
+@::
+#::
+$::
+%::
+^::
+&::
+*::
+(::
+)::
+-::
+_::
+=::
++::
+[::
+{::
+]::
+}::
+\::
+|::
+:::
+`;::
+'::
+"::
+,::
+<::
+.::
+>::
+Space::
+CapsLock::
+Return
