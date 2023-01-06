@@ -1,4 +1,4 @@
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
@@ -31,99 +31,162 @@ normal_mode_match_list := "w, W, b, B, t, T, f, F"
 ; modifiers_match_list := "{Enter}{Ctrl}{Shift}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Left}{Right}{Home}{End}{PgUp}{PgDn}"
 input_options :=  "B C E"
 
-global isInChangeMode := False
 global isInNormalMode := False
+global isInChangeMode := False
 global isInYankMode := False
 global isInVisualMode := False
 global isInDeleteMode := False
 
+
+global insertModeCode = 1 << 0
+global normalModeCode = 1 << 1
+global visualModeCode = 1 << 2
+global changeModeCode = 1 << 3
+global yankModeCode = 1 << 4
+global deleteModeCode = 1 << 5
+global innerModeCode = 1 << 6
+global outerModeCode = 1 << 7
+
+global currMode := insertModeCode
+
 check_normal_mode()
 {
-    return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    ; return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    return (WinActive("ahk_group WinTest") and ( currMode == normalModeCode))
+    ; return (WinActive("ahk_group WinTest") and ( currMode != insertModeCode))
 }
 
 check_change_mode()
 {
-    return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode == True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    ; return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode == True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    return (WinActive("ahk_group WinTest") and ( currMode == (changeModeCode | normalModeCode)))
 }
 
 check_yank_mode()
 {
-    return (WinActive("ahk_group WinTest") and ((isInNormalMode ==  True) and (isInChangeMode != True) and (isInYankMode == True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    ; return (WinActive("ahk_group WinTest") and ((isInNormalMode ==  True) and (isInChangeMode != True) and (isInYankMode == True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    return (WinActive("ahk_group WinTest") and ( currMode == (yankModeCode | normalModeCode)))
 }
 check_visual_mode()
 {
-    return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode == True) and (isInDeleteMode != True)))
+    ; return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode == True) and (isInDeleteMode != True)))
+    return (WinActive("ahk_group WinTest") and ( currMode == (visualModeCode | normalModeCode)))
 }
 
 check_delete_mode()
 {
-    return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode == True)))
+    ; return (WinActive("ahk_group WinTest") and ((isInNormalMode == True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode == True)))
+    return (WinActive("ahk_group WinTest") and ( currMode == (deleteModeCode | normalModeCode)))
 }
 
 check_insert_mode()
 {
-    return (WinActive("ahk_group WinTest") and ((isInNormalMode != True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    ; return (WinActive("ahk_group WinTest") and ((isInNormalMode != True) and (isInChangeMode != True) and (isInYankMode != True) and (isInVisualMode != True) and (isInDeleteMode != True)))
+    return (WinActive("ahk_group WinTest") and ( currMode == insertModeCode))
+}
+
+check_inner_mode()
+{
+    return (WinActive("ahk_group WinTest") and ( currMode & innerModeCode))
+}
+
+check_outer_mode()
+{
+    return (WinActive("ahk_group WinTest") and ( currMode & outerModeCode))
 }
 
 change_to_normal_mode()
 {
     global
-    isInNormalMode := True
-    isInChangeMode := False
-    isInYankMode := False
-    isInVisualMode := False
-    isInDeleteMode := False
+    currMode := normalModeCode
+    ; isInNormalMode := True
+    ; isInChangeMode := False
+    ; isInYankMode := False
+    ; isInVisualMode := False
+    ; isInDeleteMode := False
 }
 
 change_to_change_mode()
 {
     global
-    isInNormalMode := True
-    isInChangeMode := True
-    isInYankMode := False
-    isInVisualMode := False
-    isInDeleteMode := False
+    currMode := normalModeCode
+    currMode |= changeModeCode
+    ; isInNormalMode := True
+    ; isInChangeMode := True
+    ; isInYankMode := False
+    ; isInVisualMode := False
+    ; isInDeleteMode := False
 }
 
 change_to_yank_mode()
 {
     global
-    isInNormalMode := True
-    isInChangeMode := False
-    isInYankMode := True
-    isInVisualMode := False
-    isInDeleteMode := False
+    currMode := normalModeCode
+    currMode |= yankModeCode
+    ; isInNormalMode := True
+    ; isInChangeMode := False
+    ; isInYankMode := True
+    ; isInVisualMode := False
+    ; isInDeleteMode := False
 }
 
 change_to_visual_mode()
 {
     global
-    isInNormalMode := True
-    isInChangeMode := False
-    isInYankMode := False
-    isInVisualMode := True
-    isInDeleteMode := False
+    currMode := normalModeCode
+    currMode |= visualModeCode
+    ; isInNormalMode := True
+    ; isInChangeMode := False
+    ; isInYankMode := False
+    ; isInVisualMode := True
+    ; isInDeleteMode := False
 }
 
 change_to_delete_mode()
 {
     global
-    isInNormalMode := True
-    isInChangeMode := False
-    isInYankMode := False
-    isInVisualMode := False
-    isInDeleteMode := True
+    currMode = normalModeCode
+    currMode |= deleteModeCode
+    ; isInNormalMode := True
+    ; isInChangeMode := False
+    ; isInYankMode := False
+    ; isInVisualMode := False
+    ; isInDeleteMode := True
 }
 
 change_to_insert_mode()
 {
     global
-    isInNormalMode := False
-    isInChangeMode := False
-    isInYankMode := False
-    isInVisualMode := False
-    isInDeleteMode := False
+    currMode := insertModeCode
+    ; isInNormalMode := False
+    ; isInChangeMode := False
+    ; isInYankMode := False
+    ; isInVisualMode := False
+    ; isInDeleteMode := False
+}
+
+change_to_inner_mode()
+{
+    global
+    currMode |= innerModeCode
+}
+
+change_to_outer_mode()
+{
+    global
+    currMode |= outerModeCode
+}
+
+change_out_inner_mode()
+{
+    global
+    currMode &= ~innerModeCode
+}
+
+change_out_outer_mode()
+{
+    global
+    currMode &= ~outerModeCode
 }
 
 ; Functions
@@ -234,8 +297,8 @@ highlight_to_prev_char(include)
     global
     isInNormalMode := False
     
-    backup := Clipboard
     Input curr_char, B C L1 E, %modifiers_match_list%, %singlechar_match_list%
+    backup := Clipboard
     Clipboard := ""
     ; copy until SOL
     highlight_until_SOL()
@@ -270,9 +333,10 @@ highlight_to_next_char(include)
     global
     isInNormalMode := False
     
-    backup := Clipboard
     Input curr_char, B C L1 E, %modifiers_match_list%, %singlechar_match_list%
     ; Input, curr_char, L1, {LControl}{RControl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{AppsKey}{F1}{F2}{F3}{F4}{F5}{F6}{F7}{F8}{F9}{F10}{F11}{F12}{Left}{Right}{Up}{Down}{Home}{End}{PgUp}{PgDn}{Del}{Ins}{BS}{CapsLock}{NumLock}{PrintScreen}{Pause}
+
+    backup := Clipboard
     Clipboard := ""
     ; copy until EOL
     highlight_until_EOL()
@@ -349,31 +413,31 @@ move_right()
 ^!Esc::
     if (check_normal_mode()) {
         MsgBox % "normal_mode"
-    Return
+    ; Return
 }
 
 else if (check_change_mode()) {
     MsgBox % "change_mode"
-    Return
+    ; Return
 }
 
 else if (check_yank_mode()) {
     MsgBox % "yank_mode"
-    Return
+    ; Return
 }
 
 else if (check_insert_mode()) {
     MsgBox % "insert_mode"
-    Return
+    ; Return
 } else if (check_visual_mode()) {
     MsgBox % "visual_mode"
-    Return
+    ; Return
 } else if (check_delete_mode()) {
     MsgBox % "delete_mode"
-    Return
+    ; Return
 }
 
-MsgBox % "not found"
+MsgBox, current mode is %currMode% 
 Return
 
 ; Normal mode
@@ -499,10 +563,11 @@ Return
 ; STUB
 
 i::
-    Send ^{Left}^+{Right}
-    Send ^{x}
+    change_to_inner_mode()
+    ; Send ^{Left}^+{Right}
+    ; Send ^{x}
 
-    change_to_insert_mode()
+    ; change_to_insert_mode()
 Return    
     
 w::
@@ -637,7 +702,8 @@ Return
 #if check_visual_mode()
 ; STUB
 i::
-    Send ^{Left}^+{Right}
+    change_to_inner_mode()
+    ; Send ^{Left}^+{Right}
 Return
 
 ; STUB for notion
@@ -895,9 +961,161 @@ CapsLock::
     change_to_normal_mode()
 Return
 
+
+#If
+#If check_inner_mode()
+
+do_mode_action_inner()
+{
+    if (currMode & changeModeCode)
+    {
+        Send ^{x}
+        change_to_insert_mode()
+    }
+    
+    else if (currMode & deleteModeCode)
+    {
+        Send ^{Del}
+        change_out_inner_mode()
+    }
+    
+    else if (currMode & yankModeCode)
+    {
+        Send ^{c}
+        change_out_inner_mode()
+    }
+
+    Return
+}
+
+highlight_to_next_char_inner(curr_char)
+{
+    backup := Clipboard
+    Clipboard := ""
+    ; copy until EOL
+    highlight_until_EOL()
+    Send ^c
+    Send {Left}
+    ClipWait
+    
+    sleep 10
+    index := InStr(Clipboard, curr_char, true)
+    if (index != 0) {
+            index--
+        Send +{Right %index%}
+    }
+    
+    Clipboard := backup
+    Return False
+}
+
+highlight_to_prev_char_inner(curr_char)
+{
+    backup := Clipboard
+    Clipboard := ""
+    ; copy until SOL
+    highlight_until_SOL()
+    Send ^c
+    ClipWait
+    
+    sleep 10
+    len := StrLen(Clipboard)
+    index := InStr(Clipboard, curr_char, true)
+    if (index != 0) {
+        
+        Send +{Right %index%}
+        
+        Clipboard := backup
+        Return True
+    }else {
+        ; Send {Right %len%}
+        Send {Right}
+    }
+    
+    Clipboard := backup
+    return False
+}
+
+
+CapsLock::
+    change_out_inner_mode()
+    return
+
+w::
+    Send ^{Left}^+{Right}
+    do_mode_action_inner()
+    Return
+
+
+b::
+8::
+9::
+(::
+)::
+    ; Highlight bracket
+    if (highlight_to_prev_char_inner("("))
+    {
+        Send {Left}
+        highlight_to_next_char_inner(")")
+
+        do_mode_action_inner()
+        Return
+    }
+    change_out_inner_mode()
+    Return
+
+7::
+0::
++B::
+{::
+}::
+    ; Highlight brace
+    if (highlight_to_prev_char_inner("{"))
+    {
+        Send {Left}
+        highlight_to_next_char_inner("}")
+
+        do_mode_action_inner()
+        Return
+    }
+    change_out_inner_mode()
+    Return
+
+
+ö::
+ä::
+[::
+]::
+    ; Highlight square bracket
+    if (highlight_to_prev_char_inner("["))
+    {
+        Send {Left}
+        highlight_to_next_char_inner("]")
+
+        do_mode_action_inner()
+        Return
+    }
+    change_out_inner_mode()
+    Return
+
+"::
+2::
+    ; Highlight double quote
+    if (highlight_to_prev_char_inner(""""))
+    {
+        Send {Left}
+        highlight_to_next_char_inner("""")
+
+        do_mode_action_inner()
+        Return
+    }
+    change_out_inner_mode()
+    Return
+
+
 ; disable unused keybindings
 #If
-#If (WinActive("ahk_group WinTest") and (isInNormalMode == True))
+#If (WinActive("ahk_group WinTest") and (currMode != insertModeCode))
 *a::
 *b::
 *c::
@@ -1013,5 +1231,4 @@ Return
 
 CapsLock::
     change_to_normal_mode()
-Return
 Return
