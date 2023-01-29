@@ -4,6 +4,7 @@ SendMode Input  ; Recommended for new scripts due to its superior speed and reli
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 SetTitleMatchMode, 2
 
+
 ; ; Browsers
 ; GroupAdd, WinTestBrowser, ahk_exe chrome.exe
 ; GroupAdd, WinTestBrowser, ahk_exe opera.exe
@@ -18,27 +19,35 @@ GroupAdd, WinTest, ahk_exe msedge.exe
 GroupAdd, WinTest, ahk_exe Notion.exe
 GroupAdd, WinText, ahk_exe Todo.exe
 GroupAdd, WinText, ahk_exe PowerToys.PowerLauncher.exe
+
+; #If True
+
+; VarSetCapacity(APPBARDATA, A_PtrSize=4 ? 36:48)
+; #b::
+;    NumPut(DllCall("Shell32\SHAppBarMessage", "UInt", 4 ; ABM_GETSTATE
+;                                            , "Ptr", &APPBARDATA
+;                                            , "Int")
+;  ? 2:1, APPBARDATA, A_PtrSize=4 ? 32:40) ; 2 - ABS_ALWAYSONTOP, 1 - ABS_AUTOHIDE
+;  , DllCall("Shell32\SHAppBarMessage", "UInt", 10 ; ABM_SETSTATE
+;                                     , "Ptr", &APPBARDATA)
+;    KeyWait, % A_ThisHotkey
+;    Return
+
+#If 
 #IfWinActive ahk_group WinTest
-
-
 
 modifiers_match_list := "{Enter}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Right}{Home}{End}{PgUp}{PgDn}"
 ; modifiers_match_list := "{Enter}{Ctrl}{Shift}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Left}{Right}{Home}{End}{PgUp}{PgDn}"
-singlechar_match_list := "a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, x, y, z, ö, ä, ü, !, §, $, &, /, (, ), =, ?, +, #, -, _, ., :, , °, ^, <, >, {, }"
+singlechar_match_list := "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,x,y,z,ö,ä,ü,!,§,$,&,/,(,),=,?,+,#,-,_,.,:,,°,^,<,>,{,}"
+; singlechar_match_list := "a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, x, y, z, ö, ä, ü, !, §, $, &, /, (, ), =, ?, +, #, -, _, ., :, , °, ^, <, >, {, }"
 
 ; match lists for normal mode
 normal_mode_match_list := "w, W, b, B, t, T, f, F"
 ; modifiers_match_list := "{Enter}{Ctrl}{Shift}{Del}{BackSpace}{Esc}{Tab}{Up}{Down}{Left}{Right}{Home}{End}{PgUp}{PgDn}"
 input_options :=  "B C E"
 
-global isInNormalMode := False
-global isInChangeMode := False
-global isInYankMode := False
-global isInVisualMode := False
-global isInDeleteMode := False
-
-
-global insertModeCode = 1 << 0
+; global insertModeCode = 1 << 0
+global insertModeCode = 0
 global normalModeCode = 1 << 1
 global visualModeCode = 1 << 2
 global changeModeCode = 1 << 3
@@ -48,6 +57,20 @@ global innerModeCode = 1 << 6
 global outerModeCode = 1 << 7
 
 global currMode := insertModeCode
+
+toggleTaskbar()
+{
+    VarSetCapacity(APPBARDATA, A_PtrSize=4 ? 36:48)
+
+    NumPut(DllCall("Shell32\SHAppBarMessage", "UInt", 4 ; ABM_GETSTATE
+                                           , "Ptr", &APPBARDATA
+                                           , "Int")
+    ? 2:1, APPBARDATA, A_PtrSize=4 ? 32:40) ; 2 - ABS_ALWAYSONTOP, 1 - ABS_AUTOHIDE
+    , DllCall("Shell32\SHAppBarMessage", "UInt", 10 ; ABM_SETSTATE
+                                    , "Ptr", &APPBARDATA)
+    KeyWait, % A_ThisHotkey
+    Return
+}
 
 check_normal_mode()
 {
@@ -99,11 +122,6 @@ change_to_normal_mode()
 {
     global
     currMode := normalModeCode
-    ; isInNormalMode := True
-    ; isInChangeMode := False
-    ; isInYankMode := False
-    ; isInVisualMode := False
-    ; isInDeleteMode := False
 }
 
 change_to_change_mode()
@@ -111,11 +129,8 @@ change_to_change_mode()
     global
     currMode := normalModeCode
     currMode |= changeModeCode
-    ; isInNormalMode := True
-    ; isInChangeMode := True
-    ; isInYankMode := False
-    ; isInVisualMode := False
-    ; isInDeleteMode := False
+
+    Return
 }
 
 change_to_yank_mode()
@@ -123,11 +138,8 @@ change_to_yank_mode()
     global
     currMode := normalModeCode
     currMode |= yankModeCode
-    ; isInNormalMode := True
-    ; isInChangeMode := False
-    ; isInYankMode := True
-    ; isInVisualMode := False
-    ; isInDeleteMode := False
+
+    Return
 }
 
 change_to_visual_mode()
@@ -135,11 +147,8 @@ change_to_visual_mode()
     global
     currMode := normalModeCode
     currMode |= visualModeCode
-    ; isInNormalMode := True
-    ; isInChangeMode := False
-    ; isInYankMode := False
-    ; isInVisualMode := True
-    ; isInDeleteMode := False
+
+    Return
 }
 
 change_to_delete_mode()
@@ -147,46 +156,48 @@ change_to_delete_mode()
     global
     currMode = normalModeCode
     currMode |= deleteModeCode
-    ; isInNormalMode := True
-    ; isInChangeMode := False
-    ; isInYankMode := False
-    ; isInVisualMode := False
-    ; isInDeleteMode := True
+
+    Return
 }
 
 change_to_insert_mode()
 {
     global
     currMode := insertModeCode
-    ; isInNormalMode := False
-    ; isInChangeMode := False
-    ; isInYankMode := False
-    ; isInVisualMode := False
-    ; isInDeleteMode := False
+
+    Return
 }
 
 change_to_inner_mode()
 {
     global
     currMode |= innerModeCode
+
+    Return
 }
 
 change_to_outer_mode()
 {
     global
     currMode |= outerModeCode
+
+    Return
 }
 
 change_out_inner_mode()
 {
     global
     currMode &= ~innerModeCode
+
+    Return
 }
 
 change_out_outer_mode()
 {
     global
     currMode &= ~outerModeCode
+
+    Return
 }
 
 ; Functions
@@ -295,7 +306,12 @@ highlight_to_prev_char(include)
     ; FIXME select nearst char to string start not curr cursor position 
     ; TODO invert string to select nearest instance of char
     global
-    isInNormalMode := False
+    ; isInNormalMode := False
+
+    backup_mode := currMode
+    
+    ; currMode &= ~normalModeCode
+    currMode := insertModeCode
     
     Input curr_char, B C L1 E, %modifiers_match_list%, %singlechar_match_list%
     backup := Clipboard
@@ -316,7 +332,9 @@ highlight_to_prev_char(include)
         Send +{Right %index%}
         
         Clipboard := backup
-        isInNormalMode := True
+        ; isInNormalMode := True
+        ; currMode |= normalModeCode
+        currMode := backup_mode
         Return True
     }else {
         ; Send {Right %len%}
@@ -324,14 +342,20 @@ highlight_to_prev_char(include)
     }
     
     Clipboard := backup
-    isInNormalMode := True
+    ; isInNormalMode := True
+    ; currMode |= normalModeCode
+    currMode := backup_mode
     return False
 }
 
 highlight_to_next_char(include)
 {
     global
-    isInNormalMode := False
+    ; isInNormalMode := False
+    ; currMode &= ~normalModeCode
+
+    back_mode := currMode
+    currMode := insertModeCode
     
     Input curr_char, B C L1 E, %modifiers_match_list%, %singlechar_match_list%
     ; Input, curr_char, L1, {LControl}{RControl}{LAlt}{RAlt}{LShift}{RShift}{LWin}{RWin}{AppsKey}{F1}{F2}{F3}{F4}{F5}{F6}{F7}{F8}{F9}{F10}{F11}{F12}{Left}{Right}{Up}{Down}{Home}{End}{PgUp}{PgDn}{Del}{Ins}{BS}{CapsLock}{NumLock}{PrintScreen}{Pause}
@@ -353,18 +377,22 @@ highlight_to_next_char(include)
         Send +{Right %index%}
         
         Clipboard := backup
-        isInNormalMode := True
+        ; isInNormalMode := True
+        ; currMode |= normalModeCode
+        currMode := backup_mode
         Return True
     }
     
     Clipboard := backup
-    isInNormalMode := True
+    ; isInNormalMode := True
+    ; currMode |= normalModeCode
+    currMode := backup_mode
     Return False
 }
 
 save_spot()
 {
-    global
+    global spot
     backup := Clipboard
     Send +{End}
     Send ^c
@@ -393,6 +421,97 @@ capitalize_words()
 Return
 }
 
+dec2bin(x)
+{
+    while x
+		r:=1&x r,x>>=1
+
+	return r
+}
+
+bin2dec(x)
+{
+    b:=StrLen(x),r:=0
+	loop,parse,x
+		r|=A_LoopField<<--b
+
+	return r
+}
+
+
+find_number_forward(offset)
+{
+    backup := Clipboard
+    Clipboard := ""
+
+    highlight_until_EOL()
+    Send ^{c}
+    Clipwait
+    Send {Left}
+
+    position := RegExMatch(ClipBoard, "O)\b(((0b)?[0-9]+)|0x[A-F,0-9]+)\b", Match) - 1
+
+    Clipboard := backup
+
+    ; no number found
+    if (position < 0)
+    {
+        Return
+    }
+
+    ; move to numbor position
+    Send {Right %position%}
+
+    ; hexadecimial number
+    if InStr(Match.0, "0x")
+    {
+        Send {Right 2}
+
+        ; num := Format("{:X}", SubStr(Match.0, 3) + offset)
+        num := Format("{:X}", Match.0 + offset)
+        position := Match.Len() - 2
+
+        Send +{Right %position%}
+
+        Send %num%
+
+        position := StrLen(num) + 2
+        Send {Left %position%}
+    }else 
+    
+    ; binary number
+    if InStr(Match.0, "0b")
+    {
+        Send {Right 2}
+
+        num := bin2dec(SubStr(Match.0, 3)) + offset
+        num := dec2bin(num)
+        
+        position := Match.Len() - 2
+
+        Send +{Right %position%}
+
+        Send %num%
+        position := StrLen(num) + 2
+        Send {Left %position%}
+    }
+    else 
+    {
+        num := Match.0 + offset
+        position := Match.Len()
+
+        Send +{Right %position%}
+
+        Send %num%
+
+        position := StrLen(num)
+
+        Send {Left %position%}
+    }
+
+
+    Return
+}
 
 
 move_left()
@@ -435,6 +554,12 @@ else if (check_insert_mode()) {
 } else if (check_delete_mode()) {
     MsgBox % "delete_mode"
     ; Return
+}
+else if (check_inner_mode()){
+    MsgBox % "inner_mode"
+}
+else if (check_outer_mode()){
+    MsgBox % "outer_mode"
 }
 
 MsgBox, current mode is %currMode% 
@@ -531,10 +656,10 @@ Return
 ;     change_to_insert_mode()
 ; Return
 
-; a::
-;     Send {Right}
-;     change_to_insert_mode()
-; Return
+a::
+    Send {Right}
+    change_to_insert_mode()
+Return
 
 ; +A::
 ;     Send {End}
@@ -557,6 +682,14 @@ d::
     change_to_delete_mode()
 Return
 
+^a::
+    find_number_forward(1)
+Return
+
+^x::
+    find_number_forward(-1)
+Return
+
 ; change mode
 #If
 #if check_change_mode()
@@ -564,11 +697,11 @@ Return
 
 i::
     change_to_inner_mode()
-    ; Send ^{Left}^+{Right}
-    ; Send ^{x}
-
-    ; change_to_insert_mode()
 Return    
+    
+a::
+    change_to_outer_mode()
+Return
     
 w::
     Send ^+{Right}
@@ -625,11 +758,11 @@ Return
 #if check_yank_mode()
 ; STUB
 i::
-    Send ^{Left}^+{Right}
-    Send ^{c}
-    ClipWait
+    change_to_inner_mode()
+Return
 
-    change_to_normal_mode()
+a::
+    change_to_outer_mode()
 Return
     
 y::
@@ -704,6 +837,10 @@ Return
 i::
     change_to_inner_mode()
     ; Send ^{Left}^+{Right}
+Return
+
+a::
+    change_to_outer_mode()
 Return
 
 ; STUB for notion
@@ -961,6 +1098,173 @@ CapsLock::
     change_to_normal_mode()
 Return
 
+#If
+#If check_outer_mode()
+
+do_mode_action_outer()
+{
+    if (currMode & changeModeCode)
+    {
+        Send ^{x}
+        change_to_insert_mode()
+        Return
+    }
+    
+    else if (currMode & deleteModeCode)
+    {
+        Send ^{Del}
+    }
+    
+    else if (currMode & yankModeCode)
+    {
+        Send ^{c}
+    }
+
+    change_out_outer_mode()
+    Return
+}
+
+highlight_to_next_char_outer(curr_char)
+{
+    global currMode
+
+    backup_mode := currMode
+    currMode := insertModeCode
+    
+    backup := Clipboard
+    Clipboard := ""
+    ; copy until EOL
+    highlight_until_EOL()
+    Send ^c
+    Send {Left}
+    ClipWait
+    
+    sleep 10
+    index := InStr(Clipboard, curr_char, true)
+    if (index != 0) {
+        Send +{Right %index%}
+
+        Clipboard := backup
+        currMode := backup_mode
+        Return True
+    }
+    
+    Clipboard := backup
+    currMode := backup_mode
+    Return False
+}
+
+highlight_to_prev_char_outer(curr_char)
+{
+    global currMode
+    
+    backup_mode := currMode
+    currMode := insertModeCode
+    
+    backup := Clipboard
+    Clipboard := ""
+    ; copy until SOL
+    highlight_until_SOL()
+    Send ^c
+    ClipWait
+    
+    sleep 10
+    len := StrLen(Clipboard)
+    index := InStr(Clipboard, curr_char, true)
+    if (index != 0) {
+       index-- 
+        Send +{Right %index%}
+        
+        Clipboard := backup
+        currMode := backup_mode
+        Return True
+    }else {
+        ; Send {Right %len%}
+        Send {Right}
+    }
+    
+    Clipboard := backup
+    currMode := backup_mode
+    return False
+}
+
+
+CapsLock::
+    change_out_outer_mode()
+    return
+
+w::
+    Send ^{Left}^+{Right}
+    do_mode_action_outer()
+    Return
+
+
+b::
+8::
+9::
+(::
+)::
+    ; Highlight bracket
+    if (highlight_to_prev_char_outer("("))
+    {
+        Send {Left}
+        highlight_to_next_char_outer(")")
+
+        do_mode_action_outer()
+        Return
+    }
+    change_out_outer_mode()
+    Return
+
+7::
+0::
++B::
+{::
+}::
+    ; Highlight brace
+    if (highlight_to_prev_char_outer("{"))
+    {
+        Send {Left}
+        highlight_to_next_char_outer("}")
+
+        do_mode_action_outer()
+        Return
+    }
+    change_out_outer_mode()
+    Return
+
+
+ö::
+ä::
+[::
+]::
+    ; Highlight square bracket
+    if (highlight_to_prev_char_outer("["))
+    {
+        Send {Left}
+        highlight_to_next_char_outer("]")
+
+        do_mode_action_outer()
+        Return
+    }
+    change_out_outer_mode()
+    Return
+
+"::
+2::
+    ; Highlight double quote
+    if (highlight_to_prev_char_outer(""""))
+    {
+        Send {Left}
+        highlight_to_next_char_outer("""")
+
+        do_mode_action_outer()
+        Return
+    }
+    change_out_outer_mode()
+    Return
+
+
 
 #If
 #If check_inner_mode()
@@ -971,25 +1275,31 @@ do_mode_action_inner()
     {
         Send ^{x}
         change_to_insert_mode()
+
+        Return
     }
     
     else if (currMode & deleteModeCode)
     {
         Send ^{Del}
-        change_out_inner_mode()
     }
     
     else if (currMode & yankModeCode)
     {
         Send ^{c}
-        change_out_inner_mode()
     }
 
+    change_out_inner_mode()
     Return
 }
 
 highlight_to_next_char_inner(curr_char)
 {
+    global currMode
+
+    backup_mode := currMode
+    currMode := insertModeCode
+    
     backup := Clipboard
     Clipboard := ""
     ; copy until EOL
@@ -1003,14 +1313,22 @@ highlight_to_next_char_inner(curr_char)
     if (index != 0) {
             index--
         Send +{Right %index%}
+
+        Clipboard := backup
+        currMode := backup_mode
+
+        Return True
     }
     
     Clipboard := backup
+    currMode := backup_mode
     Return False
 }
 
 highlight_to_prev_char_inner(curr_char)
 {
+    global currMode
+    
     backup := Clipboard
     Clipboard := ""
     ; copy until SOL
@@ -1197,10 +1515,10 @@ Return
     change_to_insert_mode()
 Return
 
-a::
-    Send {Right}
-    change_to_insert_mode()
-Return
+; a::
+;     Send {Right}
+;     change_to_insert_mode()
+; Return
 
 +A::
     Send {End}
@@ -1231,4 +1549,12 @@ Return
 
 CapsLock::
     change_to_normal_mode()
+Return
+
+
+
+#If
+
+#b::
+    toggleTaskbar()
 Return
