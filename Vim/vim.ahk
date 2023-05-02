@@ -20,6 +20,9 @@ GroupAdd, WinTest, ahk_exe Notion.exe
 GroupAdd, WinText, ahk_exe Todo.exe
 GroupAdd, WinText, ahk_exe PowerToys.PowerLauncher.exe
 
+GroupAdd, basic, ahk_exe Cron.exe
+GroupAdd, basic, ahk_exe Stashpad.exe
+
 ; #If True
 
 ; VarSetCapacity(APPBARDATA, A_PtrSize=4 ? 36:48)
@@ -58,16 +61,16 @@ global outerModeCode = 1 << 7
 
 global currMode := insertModeCode
 
+; toggles autohide feature of the taskbar on windows 11
 toggleTaskbar()
 {
     VarSetCapacity(APPBARDATA, A_PtrSize=4 ? 36:48)
-
     NumPut(DllCall("Shell32\SHAppBarMessage", "UInt", 4 ; ABM_GETSTATE
-                                           , "Ptr", &APPBARDATA
-                                           , "Int")
+                                            , "Ptr", &APPBARDATA
+                                            , "Int")
     ? 2:1, APPBARDATA, A_PtrSize=4 ? 32:40) ; 2 - ABS_ALWAYSONTOP, 1 - ABS_AUTOHIDE
     , DllCall("Shell32\SHAppBarMessage", "UInt", 10 ; ABM_SETSTATE
-                                    , "Ptr", &APPBARDATA)
+                                        , "Ptr", &APPBARDATA)
     KeyWait, % A_ThisHotkey
     Return
 }
@@ -449,7 +452,8 @@ find_number_forward(offset)
     Clipwait
     Send {Left}
 
-    position := RegExMatch(ClipBoard, "O)\b(((0b)?[0-9]+)|0x[A-F,0-9]+)\b", Match) - 1
+    position := RegExMatch(ClipBoard, "O)(((0b)?[0-9]+)|0x[A-F,0-9]+)\b", Match) - 1
+    ; position := RegExMatch(ClipBoard, "O)\b(((0b)?[0-9]+)|0x[A-F,0-9]+)\b", Match) - 1
 
     Clipboard := backup
 
@@ -568,6 +572,15 @@ Return
 ; Normal mode
 #If
 #if check_normal_mode()
+
+; STUB block navigation for Notion
+^+j::
+    Send ^+{Down}
+Return
+
+^+k::
+    Send ^+{Up}
+Return
     
 j::
     Send {Down}
@@ -674,6 +687,12 @@ v::
     change_to_visual_mode()
 Return
 
+; Select block in Notoin
++V::
+    Send {Esc}
+    change_to_visual_mode()
+Return
+
 y::
     change_to_yank_mode()
 Return
@@ -688,6 +707,11 @@ Return
 
 ^x::
     find_number_forward(-1)
+Return
+
+; STUB for moving in screen
+z::
+    Send {PgDn}
 Return
 
 ; change mode
@@ -859,6 +883,11 @@ Return
     Send ^{e}
 Return
 
+; Stub for notion
+^+h::
+    Send ^+{H}
+Return
+
 ; STUB for notion
 z::
     capitalize_words()
@@ -868,6 +897,21 @@ Return
 ^b::
     Send ^{b}
 Return
+
+; STUB for notion
+^j::
+    Send ^{j}
+    change_to_insert_mode()
+Return
+
+; STUB block navigation for notion
+^+j::
+    Send ^+{down}
+return
+
+^+k::
+    Send ^+{up}
+return
 
 j::
     Send +{Down}
@@ -997,6 +1041,7 @@ Return
 
 "::
 2::
+q::
     surround_selection("""", """")
     change_to_insert_mode()
 Return
@@ -1097,6 +1142,22 @@ CapsLock::
     ; Send +{Left}
     change_to_normal_mode()
 Return
+
+^!g::
+    Send >
+return
+
+^!l::
+    Send <
+return
+
+!^v::
+    Send |
+return
+
+!^1::
+    Send {{}
+return
 
 #If
 #If check_outer_mode()
@@ -1252,6 +1313,7 @@ b::
 
 "::
 2::
+q::
     ; Highlight double quote
     if (highlight_to_prev_char_outer(""""))
     {
@@ -1557,4 +1619,13 @@ Return
 
 #b::
     toggleTaskbar()
+Return
+
+#IfWinActive ahk_group basic
+CapsLock::
+    Send {Esc}
+Return
+
++CapsLock::
+    Send {CapsLock}
 Return
