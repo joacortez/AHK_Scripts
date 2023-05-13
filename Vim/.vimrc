@@ -4,6 +4,7 @@ set nocompatible
 " Helps force plugins to load correctly when it is turned back on below
 filetype on
 
+se
 " TODO: Load plugins here (pathogen or vundle)
 
 " Turn on syntax highlighting
@@ -11,6 +12,10 @@ syntax on
 
 " For plugins to load correctly
 filetype plugin indent on
+set onmifunc=syntaxcomplete#Complete
+autocmd FileType * setlocal omnifunc=syntaxcomplete#Complete
+noremap <A-j> <C-x><C-o>
+noremap <A-k> <C-x><C-o><Up>
 
 " set leader to space
 let mapleader = "\<Space>"
@@ -126,6 +131,11 @@ set relativenumber
 " Mappings code goes here.
 
 " global mappings
+
+" Map Ctrl + d to duplicate line or selection
+nnoremap <C-d> :<C-u>normal! yyp<CR>
+vnoremap <C-d> :<C-u>normal! y<CR>gvP
+
 nnoremap <Leader>s :%s/\<<C-r><C-w>\>//g<Left><Left>
 inoremap <C-S-s> <ESC>:%s/\<<C-r><C-w>\>\\g<Left><Left>
 
@@ -139,28 +149,88 @@ nnoremap <A-S-j> :m +1<CR>
 nnoremap <A-S-k> :m -2<CR>
 
 nnoremap <leader>ö jA
-
-nnoremap Ö <
-nnoremap Ä >
+nnoremap <leader>Ö kA
 
 nnoremap ö [
+inoremap ö [
+vnoremap ö [
+xnoremap ö [
+cnoremap ö [
+onoremap ö [
+snoremap ö [
+
+nnoremap Ö <
+inoremap Ö <
+vnoremap Ö <
+xnoremap Ö <
+cnoremap Ö <
+onoremap Ö <
+snoremap Ö <
+
 nnoremap ä ]
+inoremap ä ]
+vnoremap ä ]
+xnoremap ä ]
+cnoremap ä ]
+onoremap ä ]
+snoremap ä ]
+
+nnoremap Ä >
+inoremap Ä >
+vnoremap Ä >
+xnoremap Ä >
+cnoremap Ä >
+onoremap Ä >
+snoremap Ä >
 
 nnoremap ü {
-
-inoremap Ö <
-inoremap Ä >
-
-inoremap ö [
-inoremap ä ]
-
 inoremap ü {
+vnoremap ü {
+xnoremap ü {
+cnoremap ü {
+onoremap ü {
+snoremap ü {
+
+noremap ciö ci[
+noremap ciÖ ci<
+noremap ciä ci]
+noremap ciÄ ci>
+noremap ciü ci{
+
+noremap diö di[
+noremap diÖ di<
+noremap diä di]
+noremap diÄ di>
+noremap diü di{
+
+noremap yiö yi[
+noremap yiÖ yi<
+noremap yiä yi]
+noremap yiÄ yi>
+noremap yiü yi{
+
+noremap caö ca[
+noremap caÖ ca<
+noremap caä ca]
+noremap caÄ ca>
+noremap caü ca{
+
+noremap daö da[
+noremap daÖ da<
+noremap daä da]
+noremap daÄ da>
+noremap daü da{
+
+noremap yaö ya[
+noremap yaÖ ya<
+noremap yaä ya]
+noremap yaÄ ya>
+noremap yaü ya{
+
 inoremap Ü {<ENTER>}<ESC>O
 
 nnoremap <C-y> V<DEL>
 inoremap <C-y> <ESC>V<DEL>
-
-
 
 " insert line above
 nnoremap <C-S-ENTER> O<Esc>
@@ -169,9 +239,6 @@ inoremap <C-S-ENTER> <Esc>O
 " insert line below
 nnoremap <S-ENTER> o<ESC>k
 inoremap <S-ENTER> <ESC>o<ESC>ki
-
-
-
 
 " define groups of filetypes
 " c-like mappings
