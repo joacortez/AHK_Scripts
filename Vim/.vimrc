@@ -1,21 +1,34 @@
 " Don't try to be vi compatible
 set nocompatible
 
+" set no temporary files
+set nobackup
+set noswapfile
+
+" set language to english
+set langmenu=en_US.UTF-8
+language messages en_US.UTF-8
+
 " Helps force plugins to load correctly when it is turned back on below
 filetype on
-
-se
-" TODO: Load plugins here (pathogen or vundle)
 
 " Turn on syntax highlighting
 syntax on
 
 " For plugins to load correctly
 filetype plugin indent on
-set onmifunc=syntaxcomplete#Complete
 autocmd FileType * setlocal omnifunc=syntaxcomplete#Complete
-noremap <A-j> <C-x><C-o>
-noremap <A-k> <C-x><C-o><Up>
+
+function! TriggerOrMoveOmni()
+  if pumvisible()
+    return "\<C-o>"
+  else
+    return "\<C-x>\<C-o>"
+  endif
+endfunction
+
+inoremap <expr> <A-j> TriggerOrMoveOmni()
+inoremap <A-k> <C-p>
 
 " set leader to space
 let mapleader = "\<Space>"
@@ -104,7 +117,7 @@ set listchars=tab:▸\ ,eol:¬
 " Uncomment this to enable by default:
 " set list " To enable by default
 " Or use your leader key + l to toggle on/off
-map <leader>l :set list!<CR> " Toggle tabs and EOL
+" map <leader>l :set list!<CR> " Toggle tabs and EOL
 
 " Color scheme (terminal)
 set background=dark
@@ -137,7 +150,7 @@ nnoremap <C-d> :<C-u>normal! yyp<CR>
 vnoremap <C-d> :<C-u>normal! y<CR>gvP
 
 nnoremap <Leader>s :%s/\<<C-r><C-w>\>//g<Left><Left>
-inoremap <C-S-s> <ESC>:%s/\<<C-r><C-w>\>\\g<Left><Left>
+inoremap <C-S-l> <ESC>:%s/\<<C-r><C-w>\>\\g<Left><Left>
 
 noremap <M-1> {
 noremap <C-c> <ESC>
@@ -148,8 +161,8 @@ inoremap <A-S-k> <ESC>:m -2<CR>i
 nnoremap <A-S-j> :m +1<CR>
 nnoremap <A-S-k> :m -2<CR>
 
-nnoremap <leader>ö jA
-nnoremap <leader>Ö kA
+" nnoremap <leader>[ jA
+" nnoremap <leader>< kA
 
 nnoremap ö [
 inoremap ö [
@@ -227,45 +240,101 @@ noremap yaä ya]
 noremap yaÄ ya>
 noremap yaü ya{
 
-inoremap Ü {<ENTER>}<ESC>O
+nnoremap <leader>ö jA
+nnoremap <leader>Ö kA
 
 nnoremap <C-y> V<DEL>
 inoremap <C-y> <ESC>V<DEL>
 
 " insert line above
-nnoremap <C-S-ENTER> O<Esc>
-inoremap <C-S-ENTER> <Esc>O
+nnoremap <C-ENTER> iquesito
+nnoremap <leader>f O<Esc>
+inoremap <C-ENTER> <Esc>O
+" TODO fix the mapping
+" nnoremap <C-S-ENTER> O<Esc>
+" inoremap <C-S-ENTER> <Esc>O
 
 " insert line below
 nnoremap <S-ENTER> o<ESC>k
 inoremap <S-ENTER> <ESC>o<ESC>ki
 
+
+" Map a key (change the key as needed) to invoke the function
+inoremap <expr> <leader>lc '<C-o>:call ToggleLineComment()<CR>'
+nnoremap <leader>lc :call ToggleLineComment()<CR>
+
+
 " define groups of filetypes
 " c-like mappings
 let s:c_type = 'c,cpp,ino,check'
-autocmd FileType <expr> c_type,java inoremap <buffer> # <ESC>A; <ESC>o
-autocmd FileType <expr> c_type ,java inoremap <buffer> <M-#> #
-autocmd FileType <expr> c_type inoremap <buffer> ß ->
-autocmd FileType <expr> c_type inoremap <buffer> <leader>ppoi ->
+execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> # <ESC>A; <ESC>o'
+execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> <M-#> #'
+execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> ß ->'
+execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> <leader>ppoi ->'
 
 
 " python specific mappings
 let s:python_type = 'python,ipynb'
 
-autocmd FileType <expr> python_type inoremap <buffer> ß <END>-><SPACE>
-autocmd FileType <expr> python_type inoremap <buffer> <leader>sse self.
-autocmd FileType <expr> python_type inoremap <buffer> # <END>:<ESC>o
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> # <END>:<ESC>o'
 
-autocmd FileType <expr> python_type inoremap <buffer> ß <END>-><SPACE>
-autocmd FileType <expr> python_type inoremap <buffer> <leader>sse self.
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
 
 " vhdl specific mappings
 let s:vhdl_type = 'vhdl,vhd'
-autocmd FileType <expr> vhdl_type inoremap <buffer> ß <=
-autocmd FileType <expr> vhdl_type inoremap <buffer> <S-ß> =>
+execute 'autocmd FileType ' . s:vhdl_type . ' inoremap <buffer> ß <='
+execute 'autocmd FileType ' . s:vhdl_type . ' inoremap <buffer> <S-ß> =>'
 
 " java specific mappings
 autocmd FileType java inoremap <buffer> ß <END>:<SPACE>
+
+" Toggle comments stuff
+
+" Define the line_comment variable (change the value as needed)
+let s:line_comment = ''
+
+execute 'autocmd FileType ' . s:c_type . ' let s:line_comment = "//"'
+execute 'autocmd FileType ' . s:python_type . ' let s:line_comment = "#"'
+execute 'autocmd FileType ' . s:vhdl_type . ' let s:line_comment = "--"'
+
+" Function to toggle line comment
+function! HasLineComment()
+
+  " Get the first characters of the current line
+  let current_line = getline('.')
+  let first_chars = current_line[0:len(s:line_comment)-1]
+
+  " Check if the first characters match the line comment string
+  if first_chars ==# s:line_comment
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+
+function! ToggleLineComment()
+    let cursor_pos = getpos('.')
+    let column = cursor_pos[2]
+
+    if HasLineComment()
+        " Remove line comment
+        let cursor_pos[2] -= (len(s:line_comment)+1)
+        execute "normal! 0".(len(s:line_comment)+1)."x"
+        
+    else
+        " Add line comment
+        let cursor_pos[2] += (len(s:line_comment)+1)
+        execute "normal! I".s:line_comment." "
+
+    endif
+
+    " execute command
+    call setpos('.', cursor_pos)
+endfunction
 
 " }}}
 
