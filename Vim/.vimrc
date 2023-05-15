@@ -45,7 +45,7 @@ set modelines=0
 set number
 
 " Highlight cursor line
-" set cursorline
+set cursorline
 
 " Show file stats
 set ruler
@@ -125,7 +125,14 @@ set listchars=tab:▸\ ,eol:¬
 " map <leader>l :set list!<CR> " Toggle tabs and EOL
 
 " Color scheme (terminal)
-set background=dark
+" set background=dark
+set t_Co=256
+if (has("termguicolors"))
+    set termguicolors
+endif
+
+syntax enable
+colorscheme night-owl
 
 " set everything to be unfolded
 set foldlevelstart=99
