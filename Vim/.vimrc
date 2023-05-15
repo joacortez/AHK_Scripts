@@ -1,3 +1,7 @@
+" set Unix EOL
+set ff=unix
+
+
 " Don't try to be vi compatible
 set nocompatible
 
@@ -31,7 +35,8 @@ inoremap <expr> <A-j> TriggerOrMoveOmni()
 inoremap <A-k> <C-p>
 
 " set leader to space
-let mapleader = "\<Space>"
+let mapleader = '´'
+" let mapleader = "\<Space>"
 
 " Security
 set modelines=0
@@ -132,9 +137,91 @@ set belloff=all
 " enable relative lines
 set relativenumber
 
+" show match count
+" set shortmess-=S
+
 " PLUGINS ---------------------------------------------------------------- {{{
 
 " Plugin code goes here.
+"
+" Fuzzy search thingy
+
+function! DynamicSearch() abort
+    let l:pattern = ''
+    let l:currfile = expand('%:p')
+
+    :echo ' > '
+
+    while 1
+      let l:key = getchar()
+        if l:key == 0x1b
+            cclose
+            break
+        elseif l:key  == 0x0d
+            break
+
+        elseif l:key == "\<BS>"
+            let pattern = substitute(pattern, '.$', '', '')
+
+        else 
+            let l:key = nr2char(l:key)
+            let l:pattern .= l:key
+        endif
+        
+         let l:cmd_ll =  'vimgrep /' . l:pattern . '/gfc ' . l:currfile
+         execute l:cmd_ll
+         copen
+         redraw
+        echon ' > ' . l:pattern
+    endwhile
+endfunction
+
+
+nnoremap <leader>fs :call DynamicSearch()<CR>
+nnoremap <silent> <buffer> <M-j> :cnext<CR>
+nnoremap <silent> <buffer> <M-k> :cprev<CR>
+" nnoremap <silent> <buffer> <M-l> :cfirst<CR>
+nnoremap <silent> <buffer> <leader>cc :cclose<CR>
+
+
+function! DynamicSearchFiles() abort
+  let l:pattern = ''
+  let l:currdir = expand('%:p:h')
+  let l:cmd = ''
+
+  echo ' > '
+
+  while 1
+    let l:key = getchar()
+    if l:key == 0x1b
+      cclose
+      break
+    elseif l:key  == 0x0d
+      break
+    elseif l:key == "\<BS>"
+      let l:pattern = substitute(l:pattern, '.$', '', '')
+    else
+      let l:key = nr2char(l:key)
+      let l:pattern .= l:key
+    endif
+
+    let l:cmd = 'silent! execute "!" . "find " . l:currdir . " -type f -name " . shellescape(l:pattern) . " 2>/dev/null"'
+    let l:result = system(l:cmd)
+    cexpr l:result
+    copen
+    redraw
+    echon ' > ' . l:pattern
+  endwhile
+
+  nnoremap <buffer> <CR> :call OpenQuickfixEntry()<CR>
+endfunction
+
+function! OpenQuickfixEntry() abort
+  let l:entry = getqflist()[getqflistindex()]
+  execute 'silent! edit ' . l:entry['filename']
+endfunction
+
+nnoremap <leader>ff :call DynamicSearchFiles()<CR>
 
 " }}}
 
