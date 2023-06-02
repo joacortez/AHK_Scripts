@@ -9,6 +9,7 @@ SetTitleMatchMode, 2
 ; #IfWinActive .py -  ahk_exe Code.exe
 
 GroupAdd, Gr, .py  
+GroupAdd, Gr, .ipynb  
 GroupAdd, Gr, Interactive
 #IfWinActive ahk_group Gr ahk_exe Code.exe
 
