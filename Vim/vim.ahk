@@ -19,9 +19,14 @@ GroupAdd, WinTest, ahk_exe msedge.exe
 GroupAdd, WinTest, ahk_exe Notion.exe
 GroupAdd, WinText, ahk_exe Todo.exe
 GroupAdd, WinText, ahk_exe PowerToys.PowerLauncher.exe
+GroupAdd, WinText, ahk_exe HxOutlook.exe
+GroupAdd, Gr, - Outlook
 
 GroupAdd, basic, ahk_exe Cron.exe
 GroupAdd, basic, ahk_exe Stashpad.exe
+GroupAdd, basic, - VIM
+groupadd, basic, ahk_exe cmd.exe
+groupadd, basic, ahk_exe cmd.exe
 
 ; #If True
 
@@ -1480,6 +1485,7 @@ b::
 
 "::
 2::
+q::
     ; Highlight double quote
     if (highlight_to_prev_char_inner(""""))
     {
