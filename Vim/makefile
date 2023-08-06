@@ -10,6 +10,7 @@ else
 	# PLUGIN_DIR := $(shell vim --cmd 'echo $$VIMRUNTIME|q' --cmd 'qall!' 2>/dev/null)/pack/plugins/start
 	VIM_DIR := /etc/vim 
 	# VIM_DIR := $(shell vim --cmd 'echo $$VIM|q' --cmd 'qa!')
+endif
 
 # Define urls for fetching later
 FETCH_PLUGIN = curl -L -o $(PLUGIN_DIR)/$(notdir$(1)) $(1)
