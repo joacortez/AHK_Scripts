@@ -1,16 +1,9 @@
-# Define paths depending on OS
-ifeq ($(OS),Windows_NT)
-	# Varibles for windows
-
-	VIM_DIR := "C:\Program Files\Vim"
-	PLUGIN_DIR := $(VIM_DIR)/vim90/pack/plugins/start
-else 
-	# variables for linux
-	PLUGIN_DIR := /usr/share/vim/vim81/pack/plugins/start
-	# PLUGIN_DIR := $(shell vim --cmd 'echo $$VIMRUNTIME|q' --cmd 'qall!' 2>/dev/null)/pack/plugins/start
-	VIM_DIR := /etc/vim 
-	# VIM_DIR := $(shell vim --cmd 'echo $$VIM|q' --cmd 'qa!')
-endif
+win_dir := /mnt/c/
+# variables for linux
+PLUGIN_DIR := /usr/share/vim/vim81/pack/plugins/start
+# PLUGIN_DIR := $(shell vim --cmd 'echo $$VIMRUNTIME|q' --cmd 'qall!' 2>/dev/null)/pack/plugins/start
+VIM_DIR := /etc/vim 
+# VIM_DIR := $(shell vim --cmd 'echo $$VIM|q' --cmd 'qa!')
 
 # Define urls for fetching later
 FETCH_PLUGIN = curl -L -o $(PLUGIN_DIR)/$(notdir$(1)) $(1)
@@ -33,6 +26,9 @@ FETCH_MAKE = curl -L $(MAKE_SRC) > $(MAKE_FILE)
 .PHONY: all install clean list dir vim update 
 
 all: install 
+
+winstall: VIM_DIR := $(win_dir)/Program\ Files/Vim
+winstall: PLUGIN_DIR := $(VIM_DIR)/vim90/pack/plugins/start
 
 install: 
 	@echo creating dir $(PLUGIN_DIR)
