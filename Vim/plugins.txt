@@ -1,6 +1,6 @@
-https://github.com/tpope/vim-surround.git,surround
-https://github.com/tpope/vim-repeat.git,repeat
-https://github.com/wellle/targets.vim.git,target
-https://github.com/markonm/traces.vim.git,target
-https://github.com/tpope/vim-speeddating.git,speeddating
-https://github.com/tpope/vim-commentary.git,commentary
+https://github.com/tpope/vim-surround.git,surround,
+https://github.com/tpope/vim-repeat.git,repeat,
+https://github.com/wellle/targets.vim.git,target,
+https://github.com/markonm/traces.vim.git,target,
+https://github.com/tpope/vim-speeddating.git,speeddating,
+https://github.com/tpope/vim-commentary.git,commentary,
