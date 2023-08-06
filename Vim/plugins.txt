@@ -3,3 +3,4 @@ https://github.com/tpope/vim-repeat.git
 https://github.com/wellle/targets.vim.git
 https://github.com/markonm/traces.vim.git
 https://github.com/tpope/vim-speeddating.git
+https://github.com/tpope/vim-commentary.git
