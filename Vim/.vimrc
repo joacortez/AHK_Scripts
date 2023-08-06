@@ -1,7 +1,6 @@
 " set Unix EOL
 set ff=unix
 
-
 " Don't try to be vi compatible
 set nocompatible
 
@@ -23,11 +22,20 @@ syntax on
 filetype plugin indent on
 autocmd FileType * setlocal omnifunc=syntaxcomplete#Complete
 
+" function! TriggerOrMoveOmni()
+  " if pumvisible()
+    " return "\<C-o>"
+  " else
+    " return "\<C-x>\<C-o>"
+  " endif
+" endfunction
+
+
 function! TriggerOrMoveOmni()
   if pumvisible()
-    return "\<C-o>"
+    return "\<C-n>"
   else
-    return "\<C-x>\<C-o>"
+    return "\<C-x>\<C-n>"
   endif
 endfunction
 
@@ -58,7 +66,7 @@ set encoding=utf-8
 
 " Whitespace
 set wrap
-set textwidth=79
+set textwidth=1080  
 set formatoptions=tcqrn1
 set tabstop=4
 set shiftwidth=4
@@ -122,17 +130,15 @@ set listchars=tab:▸\ ,eol:¬
 " Uncomment this to enable by default:
 " set list " To enable by default
 " Or use your leader key + l to toggle on/off
-" map <leader>l :set list!<CR> " Toggle tabs and EOL
+map <leader>l :set list!<CR> " Toggle tabs and EOL
 
-" Color scheme (terminal)
-" set background=dark
+" Set use all coloursset
 set t_Co=256
 if (has("termguicolors"))
     set termguicolors
 endif
 
 syntax enable
-colorscheme night-owl
 
 " set everything to be unfolded
 set foldlevelstart=99
@@ -240,8 +246,8 @@ nnoremap <leader>ff :call DynamicSearchFiles()<CR>
 " global mappings
 
 " Map Ctrl + d to duplicate line or selection
-nnoremap <C-d> :<C-u>normal! yyp<CR>
-vnoremap <C-d> :<C-u>normal! y<CR>gvP
+" nnoremap <C-d> :<C-u>normal! yyp<CR>
+" vnoremap <C-d> :<C-u>normal! y<CR>gvP
 
 nnoremap <Leader>s :%s/\<<C-r><C-w>\>//g<Left><Left>
 inoremap <C-S-l> <ESC>:%s/\<<C-r><C-w>\>\\g<Left><Left>
@@ -258,81 +264,13 @@ nnoremap <A-S-k> :m -2<CR>
 " nnoremap <leader>[ jA
 " nnoremap <leader>< kA
 
-nnoremap ö [
-inoremap ö [
-vnoremap ö [
-xnoremap ö [
-cnoremap ö [
-onoremap ö [
-snoremap ö [
+set langmap=öäÖÄü;<>[]{
 
-nnoremap Ö <
-inoremap Ö <
-vnoremap Ö <
-xnoremap Ö <
-cnoremap Ö <
-onoremap Ö <
-snoremap Ö <
-
-nnoremap ä ]
-inoremap ä ]
-vnoremap ä ]
-xnoremap ä ]
-cnoremap ä ]
-onoremap ä ]
-snoremap ä ]
-
-nnoremap Ä >
-inoremap Ä >
-vnoremap Ä >
-xnoremap Ä >
-cnoremap Ä >
-onoremap Ä >
-snoremap Ä >
-
-nnoremap ü {
-inoremap ü {
-vnoremap ü {
-xnoremap ü {
-cnoremap ü {
-onoremap ü {
-snoremap ü {
-
-noremap ciö ci[
-noremap ciÖ ci<
-noremap ciä ci]
-noremap ciÄ ci>
-noremap ciü ci{
-
-noremap diö di[
-noremap diÖ di<
-noremap diä di]
-noremap diÄ di>
-noremap diü di{
-
-noremap yiö yi[
-noremap yiÖ yi<
-noremap yiä yi]
-noremap yiÄ yi>
-noremap yiü yi{
-
-noremap caö ca[
-noremap caÖ ca<
-noremap caä ca]
-noremap caÄ ca>
-noremap caü ca{
-
-noremap daö da[
-noremap daÖ da<
-noremap daä da]
-noremap daÄ da>
-noremap daü da{
-
-noremap yaö ya[
-noremap yaÖ ya<
-noremap yaä ya]
-noremap yaÄ ya>
-noremap yaü ya{
+imap ö <
+imap ä >
+imap Ö [
+imap Ä ]
+imap ü {
 
 nnoremap <leader>ö jA
 nnoremap <leader>Ö kA
@@ -431,7 +369,6 @@ function! ToggleLineComment()
 endfunction
 
 " }}}
-
 
 " VIMSCRIPT -------------------------------------------------------------- {{{
 
