@@ -23,12 +23,13 @@ FETCH_SRCS = curl -L $(PLUGINS_SRC) > $(PLUGINS_FILE)
 FETCH_VIMRC = curl -L $(VIMRC_SRC) > $(VIMRC_FILE) 
 FETCH_MAKE = curl -L $(MAKE_SRC) > $(MAKE_FILE) 
 
-.PHONY: all install clean list dir vim update 
+.PHONY: all install clean list dir vim update  wupdate
 
 all: install 
 
 winstall: VIM_DIR := $(win_dir)/Program\ Files/Vim
 winstall: PLUGIN_DIR := $(VIM_DIR)/vim90/pack/plugins/start
+winstall: install
 
 install: 
 	@echo creating dir $(PLUGIN_DIR)
@@ -40,6 +41,10 @@ install:
 
 list: 
 	@cat $(PLUGINS_FILE)
+
+wupdate: VIM_DIR := $(win_dir)/Program\ Files/Vim
+wupdate: PLUGIN_DIR := $(VIM_DIR)/vim90/pack/plugins/start
+wupdate: update
 
 update:
 	@$(FETCH_SRCS)
