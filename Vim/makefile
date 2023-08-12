@@ -13,7 +13,7 @@ VIMRC_FILE = $(VIM_DIR)/vimrc
 MAKE_FILE = $(VIM_DIR)/makefile
 
 PLUGINS_SRC = "https://raw.githubusercontent.com/joacortez/AHK_Scripts/main/Vim/plugins.txt"
-VIMRC_SRC = "https://raw.githubusercontent.com/joacortez/AHK_Scripts/main/Vim/.vimrc"
+VIMRC_SRC = "https://raw.githubusercontent.com/joacortez/AHK_Scripts/main/Vim/vimrc"
 MAKE_SRC = "https://raw.githubusercontent.com/joacortez/AHK_Scripts/main/Vim/makefile"
 
 FETCH_PLUGIN = git clone $(1) 
@@ -47,9 +47,9 @@ wupdate: PLUGIN_DIR := $(VIM_DIR)/vim90/pack/plugins/start
 wupdate: update
 
 update:
+	@$(FETCH_MAKE)
 	@$(FETCH_SRCS)
 	@$(FETCH_VIMRC)
-	@$(FETCH_MAKE)
 
 vim:
 	@echo $(VIM_DIR)
