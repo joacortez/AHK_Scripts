@@ -2,7 +2,7 @@ win_dir := /mnt/c/
 # variables for linux
 PLUGIN_DIR := /usr/share/vim/vim81/pack/plugins/start
 # PLUGIN_DIR := $(shell vim --cmd 'echo $$VIMRUNTIME|q' --cmd 'qall!' 2>/dev/null)/pack/plugins/start
-VIM_DIR := /etc/vim 
+VIM_DIR := /etc/vim
 # VIM_DIR := $(shell vim --cmd 'echo $$VIM|q' --cmd 'qa!')
 
 # Define urls for fetching later
