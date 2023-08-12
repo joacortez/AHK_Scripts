@@ -1,0 +1,549 @@
+" set Unix EOL
+set ff=unix
+
+" Don't try to be vi compatible
+set nocompatible
+
+" set no temporary files
+set nobackup
+set noswapfile
+
+" set language to english
+set langmenu=en_US.UTF-8
+language messages en_US.UTF-8
+
+" Helps force plugins to load correctly when it is turned back on below
+filetype on
+
+" Turn on syntax highlighting
+syntax on
+
+" For plugins to load correctly
+filetype plugin indent on
+autocmd FileType * setlocal omnifunc=syntaxcomplete#Complete
+
+" function! TriggerOrMoveOmni()
+  " if pumvisible()
+    " return "\<C-o>"
+  " else
+    " return "\<C-x>\<C-o>"
+  " endif
+" endfunction
+
+
+" function! TriggerOrMoveOmni()
+"   if pumvisible()
+"     return "\<C-n>"
+"   else
+"     return "\<C-x>\<C-n>"
+"   endif
+" endfunction
+
+" inoremap <expr> <A-j> TriggerOrMoveOmni()
+" inoremap <A-k> <C-p>
+
+" set leader to space
+let mapleader = '´'
+" let mapleader = "\<Space>"
+
+" Security
+set modelines=0
+
+" Show line numbers
+set number
+
+" Highlight cursor line
+set cursorline
+
+" Show file stats
+set ruler
+
+" Blink cursor on error instead of beeping (grr)
+" set visualbell
+
+" Encoding
+set encoding=utf-8
+
+" Whitespace
+set wrap
+set textwidth=1080  
+set formatoptions=tcqrn1
+set tabstop=4
+set shiftwidth=4
+set softtabstop=2
+set expandtab
+set noshiftround
+
+" Cursor motion
+set scrolloff=20
+set backspace=indent,eol,start
+set matchpairs+=<:> " use % to jump between pairs
+runtime! macros/matchit.vim
+
+" Move up/down editor lines
+nnoremap j gj
+nnoremap k gk
+
+" Allow hidden buffers
+set hidden
+
+" Rendering
+set ttyfast
+
+" Status bar
+set laststatus=2
+
+" Last line
+set showmode
+set showcmd
+
+" Searching
+nnoremap / /\v
+vnoremap / /\v
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set showmatch
+map <leader><space> :let @/=''<cr> " clear search
+
+" Remap help key.
+inoremap <F1> <ESC>:set invfullscreen<CR>a
+nnoremap <F1> :set invfullscreen<CR>
+vnoremap <F1> :set invfullscreen<CR>
+
+" Enable auto completion menu after pressing TAB
+" set wildmenu
+
+
+" Make wildmenu behave like bash completion
+" set wildmode=list:longest
+
+" Mappings for changing directories
+nnoremap <leader>cd cd %:p:h
+nnoremap <leader>lcd lcd %:p:h
+
+" Textmate holdouts
+
+" Formatting
+map <leader>q gqip
+
+" Visualize tabs and newlines
+set listchars=tab:▸\ ,eol:¬
+" Uncomment this to enable by default:
+" set list " To enable by default
+
+" Set use all coloursset
+set t_Co=256
+if (has("termguicolors"))
+    set termguicolors
+endif
+
+syntax enable
+
+" set everything to be unfolded
+set foldlevelstart=99
+
+" disabel visual bells
+set noerrorbells
+set belloff=all
+
+" enable relative lines
+set relativenumber
+
+" show match count
+" set shortmess-=S
+
+" PLUGINS ---------------------------------------------------------------- {{{
+
+" Plugin code goes here.
+"
+" Fuzzy search thingy
+
+function! DynamicSearch() abort
+    let l:pattern = ''
+    let l:currfile = expand('%:p')
+
+    :echo ' > '
+
+    while 1
+      let l:key = getchar()
+        if l:key == 0x1b
+            cclose
+            break
+        elseif l:key  == 0x0d
+            break
+
+        elseif l:key == "\<BS>"
+            let pattern = substitute(pattern, '.$', '', '')
+
+        else 
+            let l:key = nr2char(l:key)
+            let l:pattern .= l:key
+        endif
+        
+         let l:cmd_ll =  'vimgrep /' . l:pattern . '/gfc ' . l:currfile
+         execute l:cmd_ll
+         copen
+         redraw
+        echon ' > ' . l:pattern
+    endwhile
+endfunction
+
+
+nnoremap <leader>fs :call DynamicSearch()<CR>
+" TODO needs some work
+" nnoremap <silent> <buffer> <M-j> :cnext<CR>
+" nnoremap <silent> <buffer> <M-k> :cprev<CR>
+" nnoremap <silent> <buffer> <M-l> :cfirst<CR>
+nnoremap <silent> <buffer> <leader>cc :cclose<CR>
+
+
+function! DynamicSearchFiles() abort
+  let l:pattern = ''
+  let l:currdir = expand('%:p:h')
+  let l:cmd = ''
+
+  echo ' > '
+
+  while 1
+    let l:key = getchar()
+    if l:key == 0x1b
+      cclose
+      break
+    elseif l:key  == 0x0d
+      break
+    elseif l:key == "\<BS>"
+      let l:pattern = substitute(l:pattern, '.$', '', '')
+    else
+      let l:key = nr2char(l:key)
+      let l:pattern .= l:key
+    endif
+
+    let l:cmd = 'silent! execute "!" . "find " . l:currdir . " -type f -name " . shellescape(l:pattern) . " 2>/dev/null"'
+    let l:result = system(l:cmd)
+    cexpr l:result
+    copen
+    redraw
+    echon ' > ' . l:pattern
+  endwhile
+
+  nnoremap <buffer> <CR> :call OpenQuickfixEntry()<CR>
+endfunction
+
+function! OpenQuickfixEntry() abort
+  let l:entry = getqflist()[getqflistindex()]
+  execute 'silent! edit ' . l:entry['filename']
+endfunction
+
+nnoremap <leader>ff :call DynamicSearchFiles()<CR>
+
+" }}}
+
+
+" MAPPINGS --------------------------------------------------------------- {{{
+
+" Mappings code goes here.
+
+" global mappings
+
+" Map Ctrl + d to duplicate line or selection
+" nnoremap <C-d> :<C-u>normal! yyp<CR>
+" vnoremap <C-d> :<C-u>normal! y<CR>gvP
+
+nnoremap <Leader>s :%s/\<<C-r><C-w>\>//g<Left><Left>
+inoremap <C-S-l> <ESC>:%s/\<<C-r><C-w>\>\\g<Left><Left>
+
+noremap <M-1> {
+noremap <C-c> <ESC>
+
+inoremap <A-S-j> <ESC>:m +1<CR>i
+inoremap <A-S-k> <ESC>:m -2<CR>i
+
+nnoremap <A-S-j> :m +1<CR>
+nnoremap <A-S-k> :m -2<CR>
+
+" nnoremap <leader>[ jA
+" nnoremap <leader>< kA
+
+nnoremap <leader>[ jA
+nnoremap <leader>< kA
+
+nnoremap <C-y> V<DEL>
+inoremap <C-y> <ESC>V<DEL>
+
+" insert line above
+nnoremap <C-ENTER> iquesito
+nnoremap <leader>f O<Esc>
+inoremap <C-ENTER> <Esc>O
+" TODO fix the mapping
+" nnoremap <C-S-ENTER> O<Esc>
+" inoremap <C-S-ENTER> <Esc>O
+
+" insert line below
+nnoremap <S-ENTER> o<ESC>k
+inoremap <S-ENTER> <ESC>o<ESC>ki
+
+
+" Map a key (change the key as needed) to invoke the function
+inoremap <expr> <leader>lc '<C-o>:call ToggleLineComment()<CR>'
+nnoremap <leader>lc :call ToggleLineComment()<CR>
+
+
+" define groups of filetypes
+" c-like mappings
+let s:c_type = 'c,cpp,ino,check'
+execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> # <ESC>A; <ESC>o'
+execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> <M-#> #'
+execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> ß ->'
+execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> <leader>ppoi ->'
+
+
+" python specific mappings
+let s:python_type = 'python,ipynb'
+
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> # <END>:<ESC>o'
+
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
+execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
+
+" vhdl specific mappings
+let s:vhdl_type = 'vhdl,vhd'
+execute 'autocmd FileType ' . s:vhdl_type . ' inoremap <buffer> ß <='
+execute 'autocmd FileType ' . s:vhdl_type . ' inoremap <buffer> <S-ß> =>'
+
+" java specific mappings
+autocmd FileType java inoremap <buffer> ß <END>:<SPACE>
+
+" Toggle comments stuff
+
+" Define the line_comment variable (change the value as needed)
+let s:line_comment = ''
+
+execute 'autocmd FileType ' . s:c_type . ' let s:line_comment = "//"'
+execute 'autocmd FileType ' . s:python_type . ' let s:line_comment = "#"'
+execute 'autocmd FileType ' . s:vhdl_type . ' let s:line_comment = "--"'
+
+" Function to toggle line comment
+function! HasLineComment()
+
+  " Get the first characters of the current line
+  let current_line = getline('.')
+  let first_chars = current_line[0:len(s:line_comment)-1]
+
+  " Check if the first characters match the line comment string
+  if first_chars ==# s:line_comment
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+
+function! ToggleLineComment()
+    let cursor_pos = getpos('.')
+    let column = cursor_pos[2]
+
+    if HasLineComment()
+        " Remove line comment
+        let cursor_pos[2] -= (len(s:line_comment)+1)
+        execute "normal! 0".(len(s:line_comment)+1)."x"
+        
+    else
+        " Add line comment
+        let cursor_pos[2] += (len(s:line_comment)+1)
+        execute "normal! I".s:line_comment." "
+
+    endif
+
+    " execute command
+    call setpos('.', cursor_pos)
+endfunction
+
+" }}}
+
+" VIMSCRIPT -------------------------------------------------------------- {{{
+
+" This will enable code folding.
+" Use the marker method of folding.
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+
+" More Vimscripts code goes here.
+
+" }}}
+
+" Coc autocomplete ------------------------------------------------------------ {{{
+
+let g:coc_global_extensions = [
+            \ 'coc-pairs',
+            \ ]
+
+" Having longer updatetime leads to delays
+set updatetime=300
+
+" Always show otherwise it gets mangled
+" set signcolumn=yes
+
+" NOTE de joa no me importa tener tab to autocomplete
+" Use tab for trigger completion with characters ahead and navigate
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
+" inoremap <silent><expr> <TAB>
+"       \ coc#pum#visible() ? coc#pum#next(1) :
+"       \ CheckBackspace() ? "\<Tab>" :
+"       \ coc#refresh()
+" inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice
+" inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+"                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Only trigger on alt j
+inoremap <silent><expr> <M-j> coc#refresh()
+
+" Nav suggestions with M-j and M-k intentemos usar C-n como personas normales
+" inoremap <silent><expr> <M-j> coc#pum#visible() ? coc#pum#next
+" inoremap <silent><expr> <M-k> coc#pum#visible() ? coc#pum#prev
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+
+" no es nvim soooo
+" inoremap <silent><expr> <c-@> coc#refresh()
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming
+nmap <F2> <Plug>(coc-rename)
+
+" Formatting selected code
+xmap <A-S-f> <Plug>(coc-format-selected)
+nmap <A-S-f> <Plug>(coc-format-selected)
+
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s)
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Applying code actions to the selected code block
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying code actions at the cursor position
+nmap <leader>ac  <Plug>(coc-codeaction-cursor)
+" Remap keys for apply code actions affect whole buffer
+nmap <leader>as  <Plug>(coc-codeaction-source)
+" Apply the most preferred quickfix action to fix diagnostic on the current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" TODO cambiar lo que este aca :)
+" Remap keys for applying refactor code actions
+nmap <silent> <leader>re <Plug>(coc-codeaction-refactor)
+xmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+nmap <silent> <leader>r  <Plug>(coc-codeaction-refactor-selected)
+
+" Run the Code Lens action on the current line
+nmap <leader>cl  <Plug>(coc-codelens-action)
+
+" Map function and class text objects
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server
+xmap if <Plug>(coc-funcobj-i)
+omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
+
+" Remap <C-f> and <C-b> to scroll float windows/popups
+if has('nvim-0.4.0') || has('patch-8.2.0750')
+  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+endif
+
+" Use CTRL-S for selections ranges
+" Requires 'textDocument/selectionRange' support of language server
+nmap <silent> <C-s> <Plug>(coc-range-select)
+xmap <silent> <C-s> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer
+command! -nargs=0 Format :call CocActionAsync('format')
+
+" Add `:Fold` command to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer
+command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+
+" Add (Neo)Vim's native statusline support
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Mappings for CoCList
+" Show all diagnostics
+nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item
+nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item
+nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+
+" STATUS LINE ------------------------------------------------------------ {{{
+
+" Status bar code goes here.
+
+" }}}
