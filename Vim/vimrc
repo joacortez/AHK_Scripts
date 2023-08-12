@@ -43,8 +43,11 @@ autocmd FileType * setlocal omnifunc=syntaxcomplete#Complete
 " inoremap <A-k> <C-p>
 
 " set leader to space
-let mapleader = '´'
-" let mapleader = "\<Space>"
+let mapleader = "\<Space>"
+
+" Change leader for insert mode
+imap <F12> <Nop>  " Clear the default F12 action
+let g:insert_mode_mapleader = "\<F12>"
 
 " Security
 set modelines=0
