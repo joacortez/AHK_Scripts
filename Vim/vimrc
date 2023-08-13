@@ -123,8 +123,8 @@ vnoremap <F1> :set invfullscreen<CR>
 " set wildmode=list:longest
 
 " Mappings for changing directories
-nnoremap <leader>cd cd %:p:h
-nnoremap <leader>lcd lcd %:p:h
+noremap <leader>cd cd %:p:h
+noremap <leader>lcd lcd %:p:h
 
 " Textmate holdouts
 
@@ -246,6 +246,15 @@ nnoremap <leader>ff :call DynamicSearchFiles()<CR>
 
 " MAPPINGS --------------------------------------------------------------- {{{
 
+" Mappings for all modes
+set langmap=öäÖÄüÜ;[]<>{}
+map! ö [
+map! Ö <
+map! ä ]
+map! Ä >
+map! ü {
+map! Ü }
+
 " Mappings code goes here.
 
 " global mappings
@@ -266,9 +275,6 @@ inoremap <A-S-k> <ESC>:m -2<CR>i
 nnoremap <A-S-j> :m +1<CR>
 nnoremap <A-S-k> :m -2<CR>
 
-" nnoremap <leader>[ jA
-" nnoremap <leader>< kA
-
 nnoremap <leader>[ jA
 nnoremap <leader>< kA
 
@@ -279,19 +285,6 @@ inoremap <C-y> <ESC>V<DEL>
 nnoremap <C-ENTER> iquesito
 nnoremap <leader>f O<Esc>
 inoremap <C-ENTER> <Esc>O
-" TODO fix the mapping
-" nnoremap <C-S-ENTER> O<Esc>
-" inoremap <C-S-ENTER> <Esc>O
-
-" insert line below
-nnoremap <S-ENTER> o<ESC>k
-inoremap <S-ENTER> <ESC>o<ESC>ki
-
-
-" Map a key (change the key as needed) to invoke the function
-inoremap <expr> <leader>lc '<C-o>:call ToggleLineComment()<CR>'
-nnoremap <leader>lc :call ToggleLineComment()<CR>
-
 
 " define groups of filetypes
 " c-like mappings
@@ -398,16 +391,16 @@ set updatetime=300
 " no select by `"suggest.noselect": true` in your configuration file
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config
-" inoremap <silent><expr> <TAB>
-"       \ coc#pum#visible() ? coc#pum#next(1) :
-"       \ CheckBackspace() ? "\<Tab>" :
-"       \ coc#refresh()
-" inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 " Make <CR> to accept selected completion item or notify coc.nvim to format
 " <C-g>u breaks current undo, please make your own choice
-" inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-"                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Only trigger on alt j
 inoremap <silent><expr> <M-j> coc#refresh()
