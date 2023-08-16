@@ -6,7 +6,7 @@ set nocompatible
 
 " set no temporary files
 set nobackup
-set noswapfile
+" set noswapfile
 
 " set language to english
 set langmenu=en_US.UTF-8
@@ -123,13 +123,14 @@ vnoremap <F1> :set invfullscreen<CR>
 " set wildmode=list:longest
 
 " Mappings for changing directories
-noremap <leader>cd :cd %:p:h<CR>:pwd<CR>
-noremap <leader>lcd :lcd %:p:h<CR>:pwd<CR>
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<CR>
+nnoremap <leader>lcd :lcd %:p:h<CR>:pwd<CR>
+nnoremap <leader>pwd :pwd<CR>
 
 " Textmate holdouts
 
 " Formatting
-map <leader>q gqip
+" map <leader>q gqip
 
 " Visualize tabs and newlines
 set listchars=tab:▸\ ,eol:¬
@@ -280,6 +281,12 @@ nnoremap <leader>< kA
 
 nnoremap <C-y> V<DEL>
 inoremap <C-y> <ESC>V<DEL>
+
+" Quickfix list navigation
+nnoremap ]q :cnext<CR>
+nnoremap [q :cprev<CR>
+nnoremap ]Q :cnfile<CR>
+nnoremap [Q :cpfile<CR>
 
 " insert line above
 nnoremap <C-ENTER> iquesito
@@ -449,6 +456,7 @@ nmap <F2> <Plug>(coc-rename)
 " Formatting selected code
 xmap <A-S-f> <Plug>(coc-format-selected)
 nmap <A-S-f> <Plug>(coc-format-selected)
+nnoremap <A-S-f> :call CocActionAsync('format')<CR>
 
 
 augroup mygroup
@@ -518,7 +526,7 @@ command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.org
 " Add (Neo)Vim's native statusline support
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings for CoCList
 " Show all diagnostics
