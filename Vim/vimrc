@@ -156,7 +156,7 @@ set belloff=all
 set relativenumber
 
 " show match count
-" set shortmess-=S
+set shortmess-=S
 
 " PLUGINS ---------------------------------------------------------------- {{{
 
