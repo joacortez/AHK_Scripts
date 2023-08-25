@@ -158,6 +158,11 @@ set relativenumber
 " show match count
 set shortmess-=S
 
+" COMMANDS --------------------------------------------------------------- {{{
+"
+" Open G status in new tab and in vertical mode
+:command GG :tabnew | :vert G
+
 " PLUGINS ---------------------------------------------------------------- {{{
 
 " Plugin code goes here.
