@@ -165,6 +165,11 @@ set shortmess-=S
 
 " PLUGINS ---------------------------------------------------------------- {{{
 
+" For Vimspector
+let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
+packadd! vimspector
+
+
 " Plugin code goes here.
 "
 " Fuzzy search thingy
@@ -311,15 +316,15 @@ execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> ß ->'
 execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> <leader>ppoi ->'
 
 
-" python specific mappings
-let s:python_type = 'python,ipynb'
+" " python specific mappings
+" let s:python_type = 'python,ipynb'
 
-execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
-execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
-execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> # <END>:<ESC>o'
+" execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
+" execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
+" execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> # <END>:<ESC>o'
 
-execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
-execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
+" execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> ß <END>-><SPACE>'
+" execute 'autocmd FileType ' . s:python_type . ' inoremap <buffer> <leader>sse self.'
 
 " vhdl specific mappings
 let s:vhdl_type = 'vhdl,vhd'
@@ -335,7 +340,7 @@ autocmd FileType java inoremap <buffer> ß <END>:<SPACE>
 let s:line_comment = ''
 
 execute 'autocmd FileType ' . s:c_type . ' let s:line_comment = "//"'
-execute 'autocmd FileType ' . s:python_type . ' let s:line_comment = "#"'
+" execute 'autocmd FileType ' . s:python_type . ' let s:line_comment = "#"'
 execute 'autocmd FileType ' . s:vhdl_type . ' let s:line_comment = "--"'
 
 " Function to toggle line comment
@@ -393,6 +398,7 @@ augroup END
 
 let g:coc_global_extensions = [
             \ 'coc-pairs',
+            \ 'coc-todo-tree',
             \ ]
 
 " Having longer updatetime leads to delays
@@ -450,6 +456,8 @@ nmap <silent> <C-W>gy :call CocAction('jumpTypeDefinition', 'vsplit')<CR>
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> <C-W>gi :call CocAction('jumpImplementation', 'vsplit')<CR>
 nmap <silent> gr <Plug>(coc-references)
+
+:command ShowTree :CocCommand coc-todo-tree.showTree
 
 " Use K to show documentation in preview window
 nnoremap <silent> K :call ShowDocumentation()<CR>
@@ -552,8 +560,10 @@ nnoremap <silent><nowait> ße  :<C-u>CocList extensions<cr>
 nnoremap <silent><nowait> ßc  :<C-u>CocList commands<cr>
 " Find symbol of current document
 nnoremap <silent><nowait> ßo  :<C-u>CocList outline<cr>
+nnoremap <silent><nowait> <S-A-o>  :<C-u>CocList outline<cr>
 " Search workspace symbols
 nnoremap <silent><nowait> ßs  :<C-u>CocList -I symbols<cr>
+nnoremap <silent><nowait> <S-A-s>  :<C-u>CocList -I symbols<cr>
 " Do default action for next item
 nnoremap <silent><nowait> ßj  :<C-u>CocNext<CR>
 " Do default action for previous item
