@@ -1,4 +1,4 @@
-﻿#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 ; #Warn  ; Enable warnings to assist with detecting common errors.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
@@ -1800,16 +1800,42 @@ Return
     toggleTaskbar()
 Return
 
+
 #IfWinActive ahk_group basic
 #Hotstring ? *
 CapsLock::
     Send {Esc}
 Return
 
-^!v::Send |
-Return
-^!l::Send <
-Return
-^+g::Send >
+ö::
+    Send [
+return
+
++Ö::
+    Send <
+return
+
+ä::
+    Send ]
+return
+
++Ä::
+    Send >
+return
+
+::ö::[
+::Ö::<
+::ä::]
+::Ä::>
+
+^!v::
+    Send |
 Return
 
+^!g::
+    Send >
+Return
+
+^!l::
+    Send <
+Return
