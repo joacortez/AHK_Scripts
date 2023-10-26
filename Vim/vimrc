@@ -258,13 +258,13 @@ nnoremap <leader>ff :call DynamicSearchFiles()<CR>
 " MAPPINGS --------------------------------------------------------------- {{{
 
 " Mappings for all modes
-set langmap=öäÖÄüÜ;[]<>{}
-map! ö [
-map! Ö <
-map! ä ]
-map! Ä >
-map! ü {
-map! Ü }
+" set langmap=öäÖÄüÜ;[]<>{}
+" map! ö [
+" map! Ö <
+" map! ä ]
+" map! Ä >
+" map! ü {
+" map! Ü }
 
 " Mappings code goes here.
 
@@ -277,7 +277,11 @@ map! Ü }
 nnoremap <Leader>s :%s/\<<C-r><C-w>\>//g<Left><Left>
 inoremap <C-S-l> <ESC>:%s/\<<C-r><C-w>\>\\g<Left><Left>
 
+" mapping for windows
 noremap <M-1> {
+" mapping for linxu
+noremap <Esc>1 {
+
 noremap <C-c> <ESC>
 
 inoremap <A-S-j> <ESC>:m +1<CR>i
@@ -425,9 +429,15 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Only trigger on alt j
-inoremap <silent><expr> <M-j> coc#refresh()
+" mapping for windows
+inoremap <silent><expr> <M-j> coc#refresh() 
+" mapping for wsl
+inoremap <silent><expr> <Esc>j coc#refresh()
 " Show Parameter hints
+" mapping for windows
 inoremap <silent><nowait> <M-h>  <C-o>:call CocActionAsync('showSignatureHelp')<CR>
+" mapping for wsl
+inoremap <silent><nowait> <Esc>h  <C-o>:call CocActionAsync('showSignatureHelp')<CR>
 
 " Nav suggestions with M-j and M-k intentemos usar C-n como personas normales
 " inoremap <silent><expr> <M-j> coc#pum#visible() ? coc#pum#next
@@ -574,5 +584,14 @@ nnoremap <silent><nowait> ßp  :<C-u>CocListResume<CR>
 " STATUS LINE ------------------------------------------------------------ {{{
 
 " Status bar code goes here.
+
+" }}}
+" PROJECT SPECIIFIC CONFIG------------------------------------------------ {{{
+" Read project specific session files
+let s:session_file = getcwd() . '/sess.vim'
+
+if filereadable(s:session_file) 
+  silent! execute 'source ' . s:session_file 
+endif 
 
 " }}}
