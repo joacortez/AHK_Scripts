@@ -1,3 +1,13 @@
+" set WSL/Linux spe
+let g:os = substitute(system('uname'), '\n', '', '')
+if g:os == "Linux"
+   execute "set <M-j>=j"
+   execute "set <M-h>=h"
+   execute "set <S-M-o>=O"
+   execute "set <S-M-s>=S"
+endif
+
+
 " set Unix EOL
 set ff=unix
 
@@ -314,10 +324,10 @@ inoremap <C-ENTER> <Esc>O
 " define groups of filetypes
 " c-like mappings
 let s:c_type = 'c,cpp,ino,check'
-execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> # <ESC>A; <ESC>o'
-execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> <M-#> #'
+" execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> # <ESC>A; <ESC>o'
+" execute 'autocmd FileType ' . s:c_type . ',java inoremap <buffer> <M-#> #'
 execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> ß ->'
-execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> <leader>ppoi ->'
+" execute 'autocmd FileType ' . s:c_type . ' inoremap <buffer> <leader>ppoi ->'
 
 
 " " python specific mappings
@@ -431,13 +441,9 @@ inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
 " Only trigger on alt j
 " mapping for windows
 inoremap <silent><expr> <M-j> coc#refresh() 
-" mapping for wsl
-inoremap <silent><expr> <Esc>j coc#refresh()
 " Show Parameter hints
 " mapping for windows
 inoremap <silent><nowait> <M-h>  <C-o>:call CocActionAsync('showSignatureHelp')<CR>
-" mapping for wsl
-inoremap <silent><nowait> <Esc>h  <C-o>:call CocActionAsync('showSignatureHelp')<CR>
 
 " Nav suggestions with M-j and M-k intentemos usar C-n como personas normales
 " inoremap <silent><expr> <M-j> coc#pum#visible() ? coc#pum#next
@@ -570,10 +576,10 @@ nnoremap <silent><nowait> ße  :<C-u>CocList extensions<cr>
 nnoremap <silent><nowait> ßc  :<C-u>CocList commands<cr>
 " Find symbol of current document
 nnoremap <silent><nowait> ßo  :<C-u>CocList outline<cr>
-nnoremap <silent><nowait> <S-A-o>  :<C-u>CocList outline<cr>
+nnoremap <silent><nowait> <S-M-o>  :<C-u>CocList outline<cr>
 " Search workspace symbols
 nnoremap <silent><nowait> ßs  :<C-u>CocList -I symbols<cr>
-nnoremap <silent><nowait> <S-A-s>  :<C-u>CocList -I symbols<cr>
+nnoremap <silent><nowait> <S-M-s>  :<C-u>CocList -I symbols<cr>
 " Do default action for next item
 nnoremap <silent><nowait> ßj  :<C-u>CocNext<CR>
 " Do default action for previous item
@@ -594,4 +600,6 @@ if filereadable(s:session_file)
   silent! execute 'source ' . s:session_file 
 endif 
 
+set mouse=a
+command! -nargs=0 SwitchHeader :CocCommand clangd.switchSourceHeader
 " }}}
