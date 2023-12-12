@@ -179,6 +179,13 @@ set shortmess-=S
 let g:vimspector_enable_mappings = 'VISUAL_STUDIO'
 packadd! vimspector
 
+" For CtrlP
+nnoremap <C-b> :CtrlPBuffer<CR>
+nnoremap <C-l> :CtrlPLine<CR>
+
+" Always open on current window
+let g:ctrlp_switch_buffer = 0
+
 
 " Plugin code goes here.
 "
@@ -315,6 +322,14 @@ nnoremap [Q :cpfile<CR>
 " Location list navigation
 nnoremap ]l :lnext<CR>
 nnoremap [l :lprev<CR>
+
+" Argument list navigation
+nnoremap [a :prev<CR>
+nnoremap ]a :next<CR>
+
+" Change list navigation
+nnoremap [c g;
+nnoremap ]c g,
 
 " insert line above
 nnoremap <C-ENTER> iquesito
